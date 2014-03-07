@@ -23,6 +23,8 @@ dependencies {
 AppRate.with(MyActivity.this).checkAndShow();
 ```
 
+All the following settings and actions can be chained.
+
 ## Settings
 
 ```
