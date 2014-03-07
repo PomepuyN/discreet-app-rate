@@ -75,9 +75,9 @@ uploadArchives {
             artifactId 'discreetapprate'
 
             scm {
-                url 'scm:git@github.com:PomepuyN/discreet-app-rater.git'
-                connection 'scm:git@github.com:PomepuyN/discreet-app-rater.git'
-                developerConnection 'scm:git@github.com:PomepuyN/discreet-app-rater.git'
+                url 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
+                connection 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
+                developerConnection 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
             }
 
             licenses {
