@@ -1,0 +1,2 @@
+rootProject.name = 'discreetapprate'
+include 'DiscreetAppRate'
