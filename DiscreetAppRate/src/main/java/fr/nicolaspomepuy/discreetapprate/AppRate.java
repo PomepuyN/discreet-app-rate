@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -11,12 +12,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Date;
+
 /**
  * Created by nicolas on 06/03/14.
  */
 public class AppRate {
 
     private static final String PREFS_NAME = "app_rate_prefs";
+    private static final String KEY_ELAPSED_TIME = "elapsed_time";
     private final String KEY_COUNT = "count";
     private final String KEY_CLICKED = "clicked";
     private Activity activity;
@@ -27,12 +31,19 @@ public class AppRate {
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
     private int delay = 0;
+    private long installedSince;
+    private boolean debug;
 
     private AppRate(Activity activity) {
         this.activity = activity;
     }
 
     public static AppRate with(Activity activity) {
+
+        if (activity == null) {
+            throw new IllegalStateException("Activity cannot be null");
+        }
+
         AppRate instance = new AppRate(activity);
         instance.text = activity.getString(R.string.dra_rate_app);
         instance.settings = activity.getSharedPreferences(PREFS_NAME, 0);
@@ -40,6 +51,17 @@ public class AppRate {
         return instance;
     }
 
+
+    /**
+     * Enable debug mode which will send state when actions are triggered
+     *
+     * @param debug has to be debuggable
+     * @return the {@link AppRate} instance
+     */
+    public AppRate debug(boolean debug) {
+        this.debug = debug;
+        return this;
+    }
 
     /**
      * Text to be displayed in the view
@@ -97,7 +119,19 @@ public class AppRate {
     }
 
     /**
+     * Add a constraint to show the view only if the app is installed for more than
+     *
+     * @param installedSince the time in seconds
+     * @return the {@link AppRate} instance
+     */
+    public AppRate atLeastInstalledSince(long installedSince) {
+        this.installedSince = installedSince;
+        return this;
+    }
+
+    /**
      * Delay the {@link AppRate showing time}
+     *
      * @param delay the delay in ms
      * @return the {@link AppRate} instance
      */
@@ -112,25 +146,58 @@ public class AppRate {
      */
     public void checkAndShow() {
 
-
         incrementViews();
+
+        Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), activity.getPackageName());
+        Date now = new Date();
+        if (now.getTime() - installDate.getTime() < installedSince * 1000) {
+            if (debug)
+                LogD("Date not reached. Time elapsed since installation (in sec.): " + ((now.getTime() - installDate.getTime()) / 1000));
+            return;
+        } else {
+            if (!settings.getBoolean(KEY_ELAPSED_TIME, false)) {
+                // It's the first time the time is elapsed
+                editor.putBoolean(KEY_ELAPSED_TIME, true);
+                if (debug) LogD("First time after the time is elapsed");
+                if (settings.getInt(KEY_COUNT, 5) > initialLaunchCount) {
+                    if (debug) LogD("Initial count passed. Resetting to initialLaunchCount");
+                    // Initial count passed. Resetting to initialLaunchCount
+                    editor.putInt(KEY_COUNT, initialLaunchCount);
+
+                }
+
+                editor.commit();
+
+            }
+        }
 
         boolean clicked = settings.getBoolean(KEY_CLICKED, false);
         if (clicked) return;
         int count = settings.getInt(KEY_COUNT, 0);
         if (count == initialLaunchCount) {
+            if (debug) LogD("initialLaunchCount reached");
             showAppRate();
         } else if (policy == RetryPolicy.INCREMENTAL && count % initialLaunchCount == 0) {
+            if (debug) LogD("initialLaunchCount incremental reached");
             showAppRate();
-        }else if (policy == RetryPolicy.EXPONENTIAL && count % initialLaunchCount == 0 && Utils.isPowerOfTwo(count / initialLaunchCount)) {
+        } else if (policy == RetryPolicy.EXPONENTIAL && count % initialLaunchCount == 0 && Utils.isPowerOfTwo(count / initialLaunchCount)) {
+            if (debug) LogD("initialLaunchCount exponential reached");
             showAppRate();
+        } else {
+            if (debug)
+                LogD("Nothing to show. initialLaunchCount: " + initialLaunchCount + " - Current count: " + count);
         }
+    }
+
+    private void LogD(String s) {
+        Log.d("DicreetAppRate", s);
     }
 
     /**
      * Reset the count to start over
      */
     public void reset() {
+        if (debug) LogD("Count reset");
         editor.putInt(KEY_COUNT, 0);
         editor.commit();
     }
@@ -160,7 +227,7 @@ public class AppRate {
             @Override
             public void onClick(View v) {
                 hideAllViews(mainView);
-                if (onShowListener != null)onShowListener.onRateAppDismissed();
+                if (onShowListener != null) onShowListener.onRateAppDismissed();
             }
         });
 
@@ -168,7 +235,7 @@ public class AppRate {
             @Override
             public void onClick(View v) {
                 activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName())));
-                if (onShowListener != null)onShowListener.onRateAppClicked();
+                if (onShowListener != null) onShowListener.onRateAppClicked();
                 hideAllViews(mainView);
                 editor.putBoolean(KEY_CLICKED, true);
                 editor.commit();
