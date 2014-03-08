@@ -4,3 +4,8 @@
 .DS_Store
 
 .idea/
+
+*.apk
+*lint-results.*
+
+build/
