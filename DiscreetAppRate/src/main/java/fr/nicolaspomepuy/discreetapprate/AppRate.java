@@ -3,6 +3,9 @@ package fr.nicolaspomepuy.discreetapprate;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -33,6 +37,7 @@ public class AppRate {
     private int delay = 0;
     private long installedSince;
     private boolean debug;
+    private AppRateTheme theme = AppRateTheme.DARK;
 
     private AppRate(Activity activity) {
         this.activity = activity;
@@ -146,6 +151,11 @@ public class AppRate {
         return this;
     }
 
+    public AppRate theme(AppRateTheme theme) {
+        this.theme = theme;
+        return this;
+    }
+
     /*
      *
      * ******************** ACTIONS ********************
@@ -243,6 +253,7 @@ public class AppRate {
 
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
         TextView textView = (TextView) mainView.findViewById(R.id.text);
+        RelativeLayout container = (RelativeLayout) mainView.findViewById(R.id.container);
 
         textView.setText(text);
 
@@ -265,6 +276,23 @@ public class AppRate {
 
             }
         });
+
+        if (theme == AppRateTheme.LIGHT) {
+            PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
+            Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
+            d.setColorFilter(Color.BLACK,mMode);
+            close.setImageDrawable(d);
+
+            textView.setTextColor(Color.BLACK);
+
+            container.setBackgroundColor(Color.parseColor("#aaffffff"));
+
+        } else {
+            Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
+            d.clearColorFilter();
+            close.setImageDrawable(d);
+
+        }
 
 
         if (delay > 0) {
