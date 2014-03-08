@@ -51,6 +51,12 @@ public class AppRate {
         return instance;
     }
 
+    /*
+     *
+     * ******************** SETTINGS ********************
+     *
+     */
+
 
     /**
      * Enable debug mode which will send state when actions are triggered
@@ -140,6 +146,12 @@ public class AppRate {
         return this;
     }
 
+    /*
+     *
+     * ******************** ACTIONS ********************
+     *
+     */
+
 
     /**
      * Check and show if showing the view is needed
@@ -189,16 +201,13 @@ public class AppRate {
         }
     }
 
-    private void LogD(String s) {
-        Log.d("DicreetAppRate", s);
-    }
-
     /**
      * Reset the count to start over
      */
     public void reset() {
         if (debug) LogD("Count reset");
         editor.putInt(KEY_COUNT, 0);
+        editor.putBoolean(KEY_CLICKED, false);
         editor.commit();
     }
 
@@ -208,6 +217,20 @@ public class AppRate {
     public void forceShow() {
         showAppRate();
     }
+
+    /**
+     * Avoid showing the view again. Can only be undone by {@link #reset()}.
+     */
+    public void neverShowAgain() {
+        editor.putBoolean(KEY_CLICKED, true);
+        editor.commit();
+    }
+
+    /*
+     *
+     * ******************** PRIVATE ********************
+     *
+     */
 
     private void incrementViews() {
 
@@ -295,5 +318,9 @@ public class AppRate {
         void onRateAppDismissed();
 
         void onRateAppClicked();
+    }
+
+    private void LogD(String s) {
+        Log.d("DicreetAppRate", s);
     }
 }
