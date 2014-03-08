@@ -33,6 +33,7 @@ public class AppRate {
     private int delay = 0;
     private long installedSince;
     private boolean debug;
+    private boolean fromTop = false;
 
     private AppRate(Activity activity) {
         this.activity = activity;
@@ -214,10 +215,27 @@ public class AppRate {
         editor.putInt(KEY_COUNT, settings.getInt(KEY_COUNT, 0) + 1);
         editor.commit();
     }
+    
+    private ViewGroup getView() {
+        ViewGroup mainView;
+        if (fromTop) {
+            mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate_top, null);
+        } else {
+            mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
+        }
+
+        return mainView;
+    }
+
+    public AppRate fromTop(boolean fromTop) {
+        this.fromTop = fromTop;
+        return this;
+    }
+
 
     private void showAppRate() {
-        final ViewGroup mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
-
+        final ViewGroup mainView = getView();
+        
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
         TextView textView = (TextView) mainView.findViewById(R.id.text);
 
@@ -258,7 +276,12 @@ public class AppRate {
     }
 
     private void hideAllViews(final ViewGroup mainView) {
-        Animation hideAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+        if(fromTop) {
+            hideAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out_from_top);
+        } else {
+            hideAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+        }
+        
         hideAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
