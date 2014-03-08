@@ -8,4 +8,5 @@ public class PreferencesConstants {
     public static final String KEY_ELAPSED_TIME = "elapsed_time";
     public static final String KEY_COUNT = "count";
     public static final String KEY_CLICKED = "clicked";
+    public static final String KEY_LAST_CRASH = "last_crash";
 }

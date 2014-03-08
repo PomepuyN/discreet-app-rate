@@ -37,6 +37,7 @@ public class MainActivity extends ActionBarActivity {
     private Button buttonReset;
     private Button buttonForce;
     private EditText delay;
+    private TextView lastCrash;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class MainActivity extends ActionBarActivity {
         currentCount = (TextView) findViewById(R.id.curent_count);
         hasBeenClicked = (TextView) findViewById(R.id.has_been_clicked);
         isElpased = (TextView) findViewById(R.id.is_elapsed);
+        lastCrash = (TextView) findViewById(R.id.last_crash);
         initialCount = (EditText) findViewById(R.id.initial_count);
         text = (EditText) findViewById(R.id.text);
         delay = (EditText) findViewById(R.id.delay);
@@ -104,6 +106,12 @@ public class MainActivity extends ActionBarActivity {
         currentCount.setText(String.valueOf(settings.getInt(PreferencesConstants.KEY_COUNT, 0)));
         hasBeenClicked.setText(String.valueOf(settings.getBoolean(PreferencesConstants.KEY_CLICKED, false)));
         isElpased.setText(String.valueOf(settings.getBoolean(PreferencesConstants.KEY_ELAPSED_TIME, false)));
+        long lastCrashTime = settings.getLong(PreferencesConstants.KEY_LAST_CRASH, 0L);
+        if (lastCrashTime == 0L) {
+            lastCrash.setText("Never");
+        } else {
+            lastCrash.setText(String.valueOf((System.currentTimeMillis() - lastCrashTime) / 1000) + " seconds ago");
+        }
     }
 
     private AppRate getAppRate() {
@@ -121,6 +129,8 @@ public class MainActivity extends ActionBarActivity {
                 .text(text.getText().toString())
                 .theme(AppRateTheme.LIGHT)
                 .retryPolicy(policy)
+                .debug(true)
+                .pauseTimeAfterCrash(1000)
                 .delay(Integer.valueOf(delay.getText().toString()))
                 .listener(new AppRate.OnShowListener() {
                     @Override

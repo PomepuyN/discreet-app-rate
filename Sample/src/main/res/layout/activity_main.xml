@@ -2,7 +2,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.nicolaspomepuy.discreetapprate.sample.MainActivity">
+                tools:context="com.npi.discreetapprate.sample.MainActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -78,6 +78,24 @@
 
                 <TextView
                     android:id="@+id/is_elapsed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="32dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/last_crash"
+                    android:text="Last crash"
+                    android:layout_centerVertical="true"/>
+
+                <TextView
+                    android:id="@+id/last_crash"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
