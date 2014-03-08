@@ -9,10 +9,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -192,8 +194,8 @@ public class AppRate {
      */
     public void checkAndShow() {
 
-        LogD("Last crash: "+((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000));
-        if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000< pauseAfterCrash) {
+        LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000));
+        if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000 < pauseAfterCrash) {
             if (debug) LogD("A recent crash avoids anything to be done.");
             return;
         }
@@ -295,17 +297,7 @@ public class AppRate {
         editor.putInt(KEY_COUNT, settings.getInt(KEY_COUNT, 0) + 1);
         editor.commit();
     }
-    
-    private ViewGroup getView() {
-        ViewGroup mainView;
-        if (fromTop) {
-            mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate_top, null);
-        } else {
-            mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
-        }
 
-        return mainView;
-    }
 
     public AppRate fromTop(boolean fromTop) {
         this.fromTop = fromTop;
@@ -314,11 +306,21 @@ public class AppRate {
 
 
     private void showAppRate() {
-        final ViewGroup mainView = getView();
-        
+        final ViewGroup mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
+
+
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
         TextView textView = (TextView) mainView.findViewById(R.id.text);
         RelativeLayout container = (RelativeLayout) mainView.findViewById(R.id.container);
+        if (fromTop) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+            lp.gravity = Gravity.TOP;
+            container.setLayoutParams(lp);
+        } else {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+            lp.gravity = Gravity.BOTTOM;
+            container.setLayoutParams(lp);
+        }
 
         textView.setText(text);
 
@@ -375,12 +377,12 @@ public class AppRate {
 
     private void hideAllViews(final ViewGroup mainView) {
         Animation hideAnimation;
-        if(fromTop) {
+        if (fromTop) {
             hideAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out_from_top);
         } else {
             hideAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
         }
-        
+
         hideAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -405,7 +407,12 @@ public class AppRate {
         activity.addContentView(mainView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 
-        Animation fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
+        Animation fadeInAnimation;
+        if (fromTop) {
+            fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in_from_top);
+        } else {
+            fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
+        }
         mainView.startAnimation(fadeInAnimation);
 
         if (onShowListener != null) onShowListener.onRateAppShowing();

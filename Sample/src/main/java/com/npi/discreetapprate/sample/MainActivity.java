@@ -12,6 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -38,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
     private EditText installTime;
     private EditText pauseAfterCrash;
     private Spinner actionSpinner;
+    private CheckBox onTop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +99,7 @@ public class MainActivity extends ActionBarActivity {
         actionSpinner = (Spinner) findViewById(R.id.action_chooser);
         installTime = (EditText) findViewById(R.id.install_time);
         pauseAfterCrash = (EditText) findViewById(R.id.pause_after_crash);
+        onTop = (CheckBox) findViewById(R.id.on_top);
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -139,28 +142,35 @@ public class MainActivity extends ActionBarActivity {
                 .text(text.getText().toString())
                 .retryPolicy(policy)
                 .debug(true)
+                .fromTop(onTop.isChecked())
                 .pauseTimeAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString()))
                 .atLeastInstalledSince(Integer.valueOf(installTime.getText().toString()))
                 .delay(Integer.valueOf(delay.getText().toString()))
                 .listener(new AppRate.OnShowListener() {
                     @Override
                     public void onRateAppShowing() {
-                        // View is showing => hide the buttons
-                        hideButtonBar();
+                        if (!onTop.isChecked()) {
+                            // View is showing => hide the buttons
+                            hideButtonBar();
+                        }
                     }
 
                     @Override
                     public void onRateAppDismissed() {
-                        // User clicked the cross
-                        showButtonBar();
-                        Toast.makeText(MainActivity.this, "User has dismissed.", Toast.LENGTH_LONG).show();
+                        if (!onTop.isChecked()) {
+                            // User clicked the cross
+                            showButtonBar();
+                            Toast.makeText(MainActivity.this, "User has dismissed.", Toast.LENGTH_LONG).show();
+                        }
                     }
 
                     @Override
                     public void onRateAppClicked() {
-                        // User launched the app rating
-                        showButtonBar();
-                        Toast.makeText(MainActivity.this, "User launched the Play Store.", Toast.LENGTH_LONG).show();
+                        if (!onTop.isChecked()) {
+                            // User launched the app rating
+                            showButtonBar();
+                            Toast.makeText(MainActivity.this, "User launched the Play Store.", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
     }

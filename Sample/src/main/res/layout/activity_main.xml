@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:text="Values"
                 android:textSize="20sp"
-                android:layout_marginTop="15dp"/>
+                android:layout_marginTop="5dp"/>
 
             <View
                 android:layout_width="300dp"
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:text="Settings"
                 android:textSize="20sp"
-                android:layout_marginTop="15dp"/>
+                android:layout_marginTop="5dp"/>
 
             <View
                 android:layout_width="300dp"
@@ -231,6 +231,25 @@
                     android:layout_alignParentRight="true"
                     android:text="0"
                     android:numeric="integer"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/on_top"
+                    android:text="View on top"
+                    android:layout_centerVertical="true"/>
+
+                <CheckBox
+                    android:id="@+id/on_top"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"/>
             </RelativeLayout>
 
