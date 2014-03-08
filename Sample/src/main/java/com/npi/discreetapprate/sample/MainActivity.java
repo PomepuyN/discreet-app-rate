@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import fr.nicolaspomepuy.discreetapprate.AppRate;
+import fr.nicolaspomepuy.discreetapprate.AppRateTheme;
 import fr.nicolaspomepuy.discreetapprate.RetryPolicy;
 
 public class MainActivity extends ActionBarActivity {
@@ -118,6 +119,7 @@ public class MainActivity extends ActionBarActivity {
         return AppRate.with(this)
                 .initialLaunchCount(Integer.valueOf(initialCount.getText().toString()))
                 .text(text.getText().toString())
+                .theme(AppRateTheme.LIGHT)
                 .retryPolicy(policy)
                 .delay(Integer.valueOf(delay.getText().toString()))
                 .listener(new AppRate.OnShowListener() {
