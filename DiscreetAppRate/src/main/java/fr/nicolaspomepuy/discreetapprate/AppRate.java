@@ -352,12 +352,14 @@ public class AppRate {
 
             textView.setTextColor(Color.BLACK);
 
-            container.setBackgroundColor(Color.parseColor("#aaffffff"));
+            container.setBackgroundColor(0X88ffffff);
 
         } else {
             Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
             d.clearColorFilter();
             close.setImageDrawable(d);
+
+            container.setBackgroundColor(0Xaa000000);
 
         }
 
