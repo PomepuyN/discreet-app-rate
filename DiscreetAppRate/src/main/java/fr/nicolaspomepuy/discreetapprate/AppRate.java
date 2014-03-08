@@ -1,8 +1,12 @@
 package fr.nicolaspomepuy.discreetapprate;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -19,10 +24,11 @@ import java.util.Date;
  */
 public class AppRate {
 
-    private static final String PREFS_NAME = "app_rate_prefs";
+    protected static final String PREFS_NAME = "app_rate_prefs";
     private static final String KEY_ELAPSED_TIME = "elapsed_time";
-    private final String KEY_COUNT = "count";
-    private final String KEY_CLICKED = "clicked";
+    private static final String KEY_COUNT = "count";
+    private static final String KEY_CLICKED = "clicked";
+    protected static final String KEY_LAST_CRASH = "last_crash";
     private Activity activity;
     private String text;
     private int initialLaunchCount = 5;
@@ -33,6 +39,8 @@ public class AppRate {
     private int delay = 0;
     private long installedSince;
     private boolean debug;
+    private AppRateTheme theme = AppRateTheme.DARK;
+    private long pauseAfterCrash;
     private boolean fromTop = false;
 
     private AppRate(Activity activity) {
@@ -51,6 +59,12 @@ public class AppRate {
         instance.editor = instance.settings.edit();
         return instance;
     }
+
+    /*
+     *
+     * ******************** SETTINGS ********************
+     *
+     */
 
 
     /**
@@ -131,7 +145,7 @@ public class AppRate {
     }
 
     /**
-     * Delay the {@link AppRate showing time}
+     * Delay the {@link AppRate} showing time
      *
      * @param delay the delay in ms
      * @return the {@link AppRate} instance
@@ -141,11 +155,48 @@ public class AppRate {
         return this;
     }
 
+    /**
+     * Set the theme (LIGHT or DARK)
+     *
+     * @param theme the {@link fr.nicolaspomepuy.discreetapprate.AppRateTheme} to be used
+     * @return the {@link AppRate} instance
+     */
+    public AppRate theme(AppRateTheme theme) {
+        this.theme = theme;
+        return this;
+    }
+
+
+    /**
+     * Pause duration after a crash (in sec.)
+     * /!\ Calling {@link #initExceptionHandler(android.content.Context)} is mandatory to make it work.
+     * You should do it in your {@link android.app.Application} class
+     *
+     * @param pauseAfterCrash the time to pause
+     * @return the {@link AppRate} instance
+     */
+    public AppRate pauseTimeAfterCrash(long pauseAfterCrash) {
+        this.pauseAfterCrash = pauseAfterCrash;
+        return this;
+    }
+
+    /*
+     *
+     * ******************** ACTIONS ********************
+     *
+     */
+
 
     /**
      * Check and show if showing the view is needed
      */
     public void checkAndShow() {
+
+        LogD("Last crash: "+((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000));
+        if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000< pauseAfterCrash) {
+            if (debug) LogD("A recent crash avoids anything to be done.");
+            return;
+        }
 
         incrementViews();
 
@@ -190,16 +241,14 @@ public class AppRate {
         }
     }
 
-    private void LogD(String s) {
-        Log.d("DicreetAppRate", s);
-    }
-
     /**
      * Reset the count to start over
      */
     public void reset() {
         if (debug) LogD("Count reset");
         editor.putInt(KEY_COUNT, 0);
+        editor.putBoolean(KEY_CLICKED, false);
+        editor.putLong(KEY_LAST_CRASH, 0L);
         editor.commit();
     }
 
@@ -209,6 +258,37 @@ public class AppRate {
     public void forceShow() {
         showAppRate();
     }
+
+    /**
+     * Avoid showing the view again. Can only be undone by {@link #reset()}.
+     */
+    public void neverShowAgain() {
+        editor.putBoolean(KEY_CLICKED, true);
+        editor.commit();
+    }
+
+    /**
+     * Initialize the {@link ExceptionHandler}.
+     */
+    public static void initExceptionHandler(Context context) {
+
+        Log.d("AppRate", "Init AppRate ExceptionHandler");
+
+        Thread.UncaughtExceptionHandler currentHandler = Thread.getDefaultUncaughtExceptionHandler();
+
+        // Don't register again if already registered.
+        if (!(currentHandler instanceof ExceptionHandler)) {
+
+            // Register default exceptions handler.
+            Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(currentHandler, context));
+        }
+    }
+
+    /*
+     *
+     * ******************** PRIVATE ********************
+     *
+     */
 
     private void incrementViews() {
 
@@ -238,6 +318,7 @@ public class AppRate {
         
         ImageView close = (ImageView) mainView.findViewById(R.id.close);
         TextView textView = (TextView) mainView.findViewById(R.id.text);
+        RelativeLayout container = (RelativeLayout) mainView.findViewById(R.id.container);
 
         textView.setText(text);
 
@@ -253,13 +334,30 @@ public class AppRate {
             @Override
             public void onClick(View v) {
                 activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName())));
-                if (onShowListener != null) onShowListener.onRateAppClicked();
                 hideAllViews(mainView);
                 editor.putBoolean(KEY_CLICKED, true);
                 editor.commit();
+                if (onShowListener != null) onShowListener.onRateAppClicked();
 
             }
         });
+
+        if (theme == AppRateTheme.LIGHT) {
+            PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
+            Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
+            d.setColorFilter(Color.BLACK, mMode);
+            close.setImageDrawable(d);
+
+            textView.setTextColor(Color.BLACK);
+
+            container.setBackgroundColor(Color.parseColor("#aaffffff"));
+
+        } else {
+            Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
+            d.clearColorFilter();
+            close.setImageDrawable(d);
+
+        }
 
 
         if (delay > 0) {
@@ -319,5 +417,9 @@ public class AppRate {
         void onRateAppDismissed();
 
         void onRateAppClicked();
+    }
+
+    private void LogD(String s) {
+        Log.d("DicreetAppRate", s);
     }
 }

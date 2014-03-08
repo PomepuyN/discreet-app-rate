@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="retry_policies">
+        <item>Exponential</item>
+        <item>Incremental</item>
+        <item>None</item>
+    </string-array>
+    <string-array name="actions">
+        <item>.checkAndShow()</item>
+        <item>.reset()</item>
+        <item>.forceShow()</item>
+        <item>.neverShowAgain()</item>
+        <item>Simulate a crash</item>
+    </string-array>
+</resources>
