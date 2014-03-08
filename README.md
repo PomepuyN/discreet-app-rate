@@ -25,56 +25,13 @@ AppRate.with(MyActivity.this).checkAndShow();
 
 All the following settings and actions can be chained.
 
-## Settings
+## API
 
-```
-AppRate.with(this).text(R.string.app_rate); // Change the displayed text
-```
+Please visit the [Wiki section](https://github.com/PomepuyN/discreet-app-rate/wiki) to read the full API
 
-```
-AppRate.with(this).initialLaunchCount(3); // How many times has it to be called before being displayed
-```
+## Sample
 
-```
-AppRate.with(this).retryPolicy(RetryPolicy.INCREMENTAL); // Retry policy
-```
-
-```
-AppRate.with(this).delay(1000); // Delay before showing the view
-```
-
-```
-AppRate.with(this).listener(new AppRate.OnShowListener() {
-            @Override
-            public void onRateAppShowing() {
-                // View is shown
-            }
-
-            @Override
-            public void onRateAppDismissed() {
-                // User has dismissed it
-            }
-
-            @Override
-            public void onRateAppClicked() {
-                // User has clicked the rate part
-            }
-        });
-```
-
-## Actions
-
-```
-AppRate.with(this).checkAndShow(); // Check if showing is needed and display the view
-```
-
-```
-AppRate.with(this).reset(); // Reset the count launch
-```
-
-```
-AppRate.with(this).forceShow(); // Force displaying the view
-```
+[Available in the Google Play Store](https://play.google.com/store/apps/details?id=com.npi.discreetapprate.sample)
 
 ## License
 
