@@ -5,4 +5,11 @@
         <item>Incremental</item>
         <item>None</item>
     </string-array>
+    <string-array name="actions">
+        <item>.checkAndShow()</item>
+        <item>.reset()</item>
+        <item>.forceShow()</item>
+        <item>.neverShowAgain()</item>
+        <item>Simulate a crash</item>
+    </string-array>
 </resources>

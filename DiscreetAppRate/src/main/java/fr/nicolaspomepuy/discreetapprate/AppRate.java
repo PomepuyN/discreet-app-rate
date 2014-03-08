@@ -191,7 +191,8 @@ public class AppRate {
      */
     public void checkAndShow() {
 
-        if (System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L) * 1000 < pauseAfterCrash) {
+        LogD("Last crash: "+((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000));
+        if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000< pauseAfterCrash) {
             if (debug) LogD("A recent crash avoids anything to be done.");
             return;
         }

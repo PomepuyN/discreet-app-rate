@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import fr.nicolaspomepuy.discreetapprate.AppRate;
-import fr.nicolaspomepuy.discreetapprate.AppRateTheme;
 import fr.nicolaspomepuy.discreetapprate.RetryPolicy;
 
 public class MainActivity extends ActionBarActivity {
@@ -33,11 +32,12 @@ public class MainActivity extends ActionBarActivity {
     private EditText initialCount;
     private EditText text;
     private Spinner retryPolicy;
-    private Button buttonLaunch;
-    private Button buttonReset;
-    private Button buttonForce;
+    private Button okButton;
     private EditText delay;
     private TextView lastCrash;
+    private EditText installTime;
+    private EditText pauseAfterCrash;
+    private Spinner actionSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,26 +52,30 @@ public class MainActivity extends ActionBarActivity {
         updateValueDisplay();
 
 
-        buttonForce.setOnClickListener(new View.OnClickListener() {
+        okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getAppRate().forceShow();
-                updateValueDisplay();
-            }
-        });
 
-        buttonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getAppRate().reset();
-                updateValueDisplay();
-            }
-        });
+                switch (actionSpinner.getSelectedItemPosition()) {
+                    case 0:
+                        getAppRate().checkAndShow();
+                        break;
+                    case 1:
+                        getAppRate().reset();
+                        break;
+                    case 2:
+                        getAppRate().forceShow();
+                        break;
+                    case 3:
+                        getAppRate().neverShowAgain();
+                        break;
+                    case 4:
+                        editor.putLong(PreferencesConstants.KEY_LAST_CRASH, System.currentTimeMillis());
+                        editor.commit();
+                        Toast.makeText(MainActivity.this, "App has crashed just now", Toast.LENGTH_LONG).show();
+                        break;
+                }
 
-        buttonLaunch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getAppRate().checkAndShow();
                 updateValueDisplay();
             }
         });
@@ -81,9 +85,7 @@ public class MainActivity extends ActionBarActivity {
     private void manageViews() {
         buttonBar = (LinearLayout) findViewById(R.id.button_bar);
 
-        buttonForce = (Button) findViewById(R.id.button_force);
-        buttonReset = (Button) findViewById(R.id.button_reset);
-        buttonLaunch = (Button) findViewById(R.id.button_launch);
+        okButton = (Button) findViewById(R.id.ok_button);
         currentCount = (TextView) findViewById(R.id.curent_count);
         hasBeenClicked = (TextView) findViewById(R.id.has_been_clicked);
         isElpased = (TextView) findViewById(R.id.is_elapsed);
@@ -92,12 +94,20 @@ public class MainActivity extends ActionBarActivity {
         text = (EditText) findViewById(R.id.text);
         delay = (EditText) findViewById(R.id.delay);
         retryPolicy = (Spinner) findViewById(R.id.retry_policy);
+        actionSpinner = (Spinner) findViewById(R.id.action_chooser);
+        installTime = (EditText) findViewById(R.id.install_time);
+        pauseAfterCrash = (EditText) findViewById(R.id.pause_after_crash);
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.retry_policies, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         retryPolicy.setAdapter(adapter);
+
+        ArrayAdapter<CharSequence> actionAdapter = ArrayAdapter.createFromResource(this,
+                R.array.actions, android.R.layout.simple_spinner_item);
+        actionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        actionSpinner.setAdapter(actionAdapter);
 
     }
 
@@ -127,10 +137,10 @@ public class MainActivity extends ActionBarActivity {
         return AppRate.with(this)
                 .initialLaunchCount(Integer.valueOf(initialCount.getText().toString()))
                 .text(text.getText().toString())
-                .theme(AppRateTheme.LIGHT)
                 .retryPolicy(policy)
                 .debug(true)
-                .pauseTimeAfterCrash(1000)
+                .pauseTimeAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString()))
+                .atLeastInstalledSince(Integer.valueOf(installTime.getText().toString()))
                 .delay(Integer.valueOf(delay.getText().toString()))
                 .listener(new AppRate.OnShowListener() {
                     @Override

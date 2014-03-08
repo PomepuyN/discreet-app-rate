@@ -192,6 +192,47 @@
                     android:numeric="integer"
                     android:layout_centerVertical="true"/>
             </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/install_time"
+                    android:text="At least installed since (time in sec.)"
+                    android:layout_centerVertical="true"/>
+
+                <EditText
+                    android:id="@+id/install_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="0"
+                    android:numeric="integer"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/pause_after_crash"
+                    android:text="Pause after a crash (time in sec.)"
+                    android:layout_centerVertical="true"/>
+
+                <EditText
+                    android:id="@+id/pause_after_crash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="0"
+                    android:numeric="integer"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
 
         </LinearLayout>
 
@@ -202,27 +243,21 @@
         android:id="@+id/button_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical">
 
-        <Button
-            android:id="@+id/button_force"
+        <Spinner
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Force"/>
+            android:id="@+id/action_chooser"/>
 
         <Button
-            android:id="@+id/button_reset"
+            android:id="@+id/ok_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Reset"/>
+            android:text="@android:string/ok"/>
 
-        <Button
-            android:id="@+id/button_launch"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Launch"/>
     </LinearLayout>
 </RelativeLayout>
