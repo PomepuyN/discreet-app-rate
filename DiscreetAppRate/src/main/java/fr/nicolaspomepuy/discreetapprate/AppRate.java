@@ -276,6 +276,7 @@ public class AppRate {
     }
 
     private void hideAllViews(final ViewGroup mainView) {
+        Animation hideAnimation;
         if(fromTop) {
             hideAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out_from_top);
         } else {
