@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import fr.nicolaspomepuy.discreetapprate.AppRate;
 import fr.nicolaspomepuy.discreetapprate.RetryPolicy;
 
@@ -81,7 +89,6 @@ public class MainActivity extends ActionBarActivity {
                 updateValueDisplay();
             }
         });
-
     }
 
     private void manageViews() {
@@ -125,6 +132,47 @@ public class MainActivity extends ActionBarActivity {
         } else {
             lastCrash.setText(String.valueOf((System.currentTimeMillis() - lastCrashTime) / 1000) + " seconds ago");
         }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Process process = Runtime.getRuntime().exec("logcat -d");
+                    BufferedReader bufferedReader = new BufferedReader(
+                            new InputStreamReader(process.getInputStream()));
+
+                    final StringBuilder log=new StringBuilder();
+                    String line = "";
+                    while ((line = bufferedReader.readLine()) != null) {
+                        if (line.contains("DicreetAppRate")) {
+                            int index = line.indexOf(":");
+
+                            if (!TextUtils.isEmpty(log.toString())) log.append("\n");
+                            log.append(line.substring(index+1));
+
+                        }
+                    }
+
+
+                    final Style style = new Style.Builder(Style.INFO).setConfiguration(new Configuration.Builder()
+                            .setDuration(Configuration.DURATION_LONG)
+                            .build()).build();
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            if (!TextUtils.isEmpty(log.toString())) {
+                                Crouton.clearCroutonsForActivity(MainActivity.this);
+                                Crouton.makeText(MainActivity.this, log.toString(), style).show();
+
+                            }
+                        }
+                    });
+                    Runtime.getRuntime().exec("logcat -c");
+
+                }
+                catch (IOException e) {}
+            }
+        }).start();
     }
 
     private AppRate getAppRate() {
