@@ -48,6 +48,8 @@ public class MainActivity extends ActionBarActivity {
     private EditText pauseAfterCrash;
     private Spinner actionSpinner;
     private CheckBox onTop;
+    private TextView monitoredTime;
+    private EditText minimumMonitoringTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +93,18 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppRate.with(this).debug(true).endMonitoring();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppRate.with(this).debug(true).startMonitoring();
+    }
+
     private void manageViews() {
         buttonBar = (LinearLayout) findViewById(R.id.button_bar);
 
@@ -99,6 +113,7 @@ public class MainActivity extends ActionBarActivity {
         hasBeenClicked = (TextView) findViewById(R.id.has_been_clicked);
         isElpased = (TextView) findViewById(R.id.is_elapsed);
         lastCrash = (TextView) findViewById(R.id.last_crash);
+        monitoredTime = (TextView) findViewById(R.id.monitored_time);
         initialCount = (EditText) findViewById(R.id.initial_count);
         text = (EditText) findViewById(R.id.text);
         delay = (EditText) findViewById(R.id.delay);
@@ -106,6 +121,7 @@ public class MainActivity extends ActionBarActivity {
         actionSpinner = (Spinner) findViewById(R.id.action_chooser);
         installTime = (EditText) findViewById(R.id.install_time);
         pauseAfterCrash = (EditText) findViewById(R.id.pause_after_crash);
+        minimumMonitoringTime = (EditText) findViewById(R.id.minimum_monitoring_time);
         onTop = (CheckBox) findViewById(R.id.on_top);
 
 
@@ -126,6 +142,7 @@ public class MainActivity extends ActionBarActivity {
         currentCount.setText(String.valueOf(settings.getInt(PreferencesConstants.KEY_COUNT, 0)));
         hasBeenClicked.setText(String.valueOf(settings.getBoolean(PreferencesConstants.KEY_CLICKED, false)));
         isElpased.setText(String.valueOf(settings.getBoolean(PreferencesConstants.KEY_ELAPSED_TIME, false)));
+        monitoredTime.setText(String.valueOf(settings.getLong(PreferencesConstants.KEY_MONITOR_TOTAL, 0L) / 1000) + " seconds");
         long lastCrashTime = settings.getLong(PreferencesConstants.KEY_LAST_CRASH, 0L);
         if (lastCrashTime == 0L) {
             lastCrash.setText("Never");
@@ -141,14 +158,14 @@ public class MainActivity extends ActionBarActivity {
                     BufferedReader bufferedReader = new BufferedReader(
                             new InputStreamReader(process.getInputStream()));
 
-                    final StringBuilder log=new StringBuilder();
+                    final StringBuilder log = new StringBuilder();
                     String line = "";
                     while ((line = bufferedReader.readLine()) != null) {
                         if (line.contains("DicreetAppRate")) {
                             int index = line.indexOf(":");
 
                             if (!TextUtils.isEmpty(log.toString())) log.append("\n");
-                            log.append(line.substring(index+1));
+                            log.append(line.substring(index + 1));
 
                         }
                     }
@@ -169,8 +186,8 @@ public class MainActivity extends ActionBarActivity {
                     });
                     Runtime.getRuntime().exec("logcat -c");
 
+                } catch (IOException e) {
                 }
-                catch (IOException e) {}
             }
         }).start();
     }
@@ -194,6 +211,7 @@ public class MainActivity extends ActionBarActivity {
                 .pauseTimeAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString()))
                 .atLeastInstalledSince(Integer.valueOf(installTime.getText().toString()))
                 .delay(Integer.valueOf(delay.getText().toString()))
+                .minimumMonitoringTime(Integer.valueOf(minimumMonitoringTime.getText().toString()))
                 .listener(new AppRate.OnShowListener() {
                     @Override
                     public void onRateAppShowing() {

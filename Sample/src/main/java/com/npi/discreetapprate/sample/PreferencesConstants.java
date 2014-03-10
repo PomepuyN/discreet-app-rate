@@ -9,4 +9,6 @@ public class PreferencesConstants {
     public static final String KEY_COUNT = "count";
     public static final String KEY_CLICKED = "clicked";
     public static final String KEY_LAST_CRASH = "last_crash";
+    public static final String KEY_MONITOR_START = "monitor_start";
+    public static final String KEY_MONITOR_TOTAL = "monitor_total";
 }

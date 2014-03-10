@@ -31,6 +31,8 @@ public class AppRate {
     private static final String KEY_COUNT = "count";
     private static final String KEY_CLICKED = "clicked";
     protected static final String KEY_LAST_CRASH = "last_crash";
+    private static final String KEY_MONITOR_START = "monitor_start";
+    private static final String KEY_MONITOR_TOTAL = "monitor_total";
     private Activity activity;
     private String text;
     private int initialLaunchCount = 5;
@@ -44,6 +46,7 @@ public class AppRate {
     private AppRateTheme theme = AppRateTheme.DARK;
     private long pauseAfterCrash;
     private boolean fromTop = false;
+    private long minimumMonitoringTime;
 
     private AppRate(Activity activity) {
         this.activity = activity;
@@ -182,6 +185,17 @@ public class AppRate {
         return this;
     }
 
+    /**
+     * Set the minimum monitoring time needed before showing the view
+     *
+     * @param minimumMonitoringTime the minimum time in seconds
+     * @return the {@link AppRate} instance
+     */
+    public AppRate minimumMonitoringTime(long minimumMonitoringTime) {
+        this.minimumMonitoringTime = minimumMonitoringTime;
+        return this;
+    }
+
     /*
      *
      * ******************** ACTIONS ********************
@@ -200,7 +214,13 @@ public class AppRate {
             return;
         }
 
+        if (settings.getLong(KEY_MONITOR_TOTAL, 0L) / 1000 < minimumMonitoringTime) {
+            if (debug)
+                LogD("Monitor time not reached. Nothing will be done");
+            return;
+        }
         incrementViews();
+
 
         Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), activity.getPackageName());
         Date now = new Date();
@@ -208,21 +228,20 @@ public class AppRate {
             if (debug)
                 LogD("Date not reached. Time elapsed since installation (in sec.): " + ((now.getTime() - installDate.getTime()) / 1000));
             return;
-        } else {
-            if (!settings.getBoolean(KEY_ELAPSED_TIME, false)) {
-                // It's the first time the time is elapsed
-                editor.putBoolean(KEY_ELAPSED_TIME, true);
-                if (debug) LogD("First time after the time is elapsed");
-                if (settings.getInt(KEY_COUNT, 5) > initialLaunchCount) {
-                    if (debug) LogD("Initial count passed. Resetting to initialLaunchCount");
-                    // Initial count passed. Resetting to initialLaunchCount
-                    editor.putInt(KEY_COUNT, initialLaunchCount);
-
-                }
-
-                editor.commit();
+        }
+        if (!settings.getBoolean(KEY_ELAPSED_TIME, false)) {
+            // It's the first time the time is elapsed
+            editor.putBoolean(KEY_ELAPSED_TIME, true);
+            if (debug) LogD("First time after the time is elapsed");
+            if (settings.getInt(KEY_COUNT, 5) > initialLaunchCount) {
+                if (debug) LogD("Initial count passed. Resetting to initialLaunchCount");
+                // Initial count passed. Resetting to initialLaunchCount
+                editor.putInt(KEY_COUNT, initialLaunchCount);
 
             }
+
+            editor.commit();
+
         }
 
         boolean clicked = settings.getBoolean(KEY_CLICKED, false);
@@ -266,6 +285,36 @@ public class AppRate {
      */
     public void neverShowAgain() {
         editor.putBoolean(KEY_CLICKED, true);
+        editor.commit();
+    }
+
+    /**
+     * Start monitoring
+     */
+    public void startMonitoring() {
+        if (debug) LogD("Start monitoring");
+        long start = settings.getLong(KEY_MONITOR_START, 0);
+        if (start != 0) {
+            if (debug) LogD("Monitor error. Start monitoring called before end. Adding the result");
+            endMonitoring();
+        }
+        editor.putLong(KEY_MONITOR_START, System.currentTimeMillis());
+        editor.commit();
+    }
+
+    /**
+     * End montoring
+     */
+    public void endMonitoring() {
+        if (debug) LogD("End monitoring");
+        editor.commit();
+        long start = settings.getLong(KEY_MONITOR_START, 0);
+        if (start == 0) {
+            if (debug) LogD("Monitor error. End monitoring called before start.");
+            return;
+        }
+        editor.putLong(KEY_MONITOR_TOTAL, settings.getLong(KEY_MONITOR_TOTAL, 0) + (System.currentTimeMillis() - start));
+        editor.putLong(KEY_MONITOR_START, 0);
         editor.commit();
     }
 
