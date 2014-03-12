@@ -47,4 +47,19 @@ public class Utils {
         // field wasn't found
         return null;
     }
+    public static boolean isGooglePlayInstalled(Context context) {
+        PackageManager pm = context.getPackageManager();
+        boolean app_installed = false;
+        try
+        {
+            PackageInfo info = pm.getPackageInfo("com.android.vending", PackageManager.GET_ACTIVITIES);
+            String label = (String) info.applicationInfo.loadLabel(pm);
+            app_installed = (label != null && !label.equals("Market"));
+        }
+        catch (PackageManager.NameNotFoundException e)
+        {
+            app_installed = false;
+        }
+        return app_installed;
+    }
 }

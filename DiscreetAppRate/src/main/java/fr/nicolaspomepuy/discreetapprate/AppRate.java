@@ -212,7 +212,12 @@ public class AppRate {
      */
     public void checkAndShow() {
 
-        LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
+        if (!Utils.isGooglePlayInstalled(activity)) {
+            if (debug) LogD("Play Store is not installed. Won't do anything");
+            return;
+        }
+
+        if (debug) LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
         if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000 < pauseAfterCrash) {
             if (debug) LogD("A recent crash avoids anything to be done.");
             return;
@@ -288,6 +293,9 @@ public class AppRate {
      * Will force the {@link AppRate} to show
      */
     public void forceShow() {
+        if (!Utils.isGooglePlayInstalled(activity)) {
+            if (debug) LogD("Play Store is not installed. Won't do anything");
+        }
         showAppRate();
     }
 
