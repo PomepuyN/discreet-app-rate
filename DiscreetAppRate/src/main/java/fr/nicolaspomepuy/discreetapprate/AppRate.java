@@ -1,18 +1,12 @@
 package fr.nicolaspomepuy.discreetapprate;
 
-import java.util.Date;
-
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,6 +18,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.Date;
 
 /**
  * Created by nicolas on 06/03/14.
@@ -229,7 +225,7 @@ public class AppRate {
             return;
         }
 
-        if (!isOnline()) {
+        if (!Utils.isOnline(activity)) {
             if (debug)
                 LogD("Device is not online. AppRate try to show up next time.");
             return;
@@ -486,26 +482,6 @@ public class AppRate {
         mainView.startAnimation(fadeInAnimation);
 
         if (onShowListener != null) onShowListener.onRateAppShowing();
-    }
-
-    /*
-     * This method check network state for opening Google Play Store If network
-     * is not avaible AppRate will not try to show up. 
-     * 
-     * This method return true if application doesn't has "ACCESS_NETWORK_STATE" permission.
-     */
-    private boolean isOnline() {
-        int res = activity.checkCallingOrSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE);
-        if (res == PackageManager.PERMISSION_GRANTED) {
-            ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = cm.getActiveNetworkInfo();
-            if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-                return true;
-            }
-            return false;
-        }
-
-        return true;
     }
 
     public interface OnShowListener {
