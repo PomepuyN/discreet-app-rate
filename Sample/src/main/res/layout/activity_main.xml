@@ -2,7 +2,9 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.npi.discreetapprate.sample.MainActivity">
+                tools:context="com.npi.discreetapprate.sample.MainActivity"
+                android:fitsSystemWindows="true"
+                android:clipToPadding="false">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -284,6 +286,27 @@
 
                 <EditText
                     android:id="@+id/minimum_monitoring_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="0"
+                    android:numeric="integer"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/minimum_interval"
+                    android:text="Minimum interval"
+                    android:layout_centerVertical="true"/>
+
+                <EditText
+                    android:id="@+id/minimum_interval"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

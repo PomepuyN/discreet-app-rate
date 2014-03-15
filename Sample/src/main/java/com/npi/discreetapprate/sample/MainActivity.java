@@ -2,13 +2,17 @@ package com.npi.discreetapprate.sample;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
@@ -19,6 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,11 +56,28 @@ public class MainActivity extends ActionBarActivity {
     private CheckBox onTop;
     private TextView monitoredTime;
     private EditText minimumMonitoringTime;
+    private EditText minimumInterval;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window win = getWindow();
+            WindowManager.LayoutParams winParams = win.getAttributes();
+            int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+            winParams.flags |= bits;
+            bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+            winParams.flags |= bits;
+            win.setAttributes(winParams);
+            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+            // enable status bar tint
+            tintManager.setStatusBarTintEnabled(true);
+            // enable navigation bar tint
+            tintManager.setNavigationBarTintEnabled(true);
+            tintManager.setTintColor(Color.parseColor("#DDDDDD"));
+        }
 
         manageViews();
 
@@ -122,6 +145,7 @@ public class MainActivity extends ActionBarActivity {
         installTime = (EditText) findViewById(R.id.install_time);
         pauseAfterCrash = (EditText) findViewById(R.id.pause_after_crash);
         minimumMonitoringTime = (EditText) findViewById(R.id.minimum_monitoring_time);
+        minimumInterval = (EditText) findViewById(R.id.minimum_interval);
         onTop = (CheckBox) findViewById(R.id.on_top);
 
 
@@ -212,6 +236,7 @@ public class MainActivity extends ActionBarActivity {
                 .atLeastInstalledSince(Integer.valueOf(installTime.getText().toString()))
                 .delay(Integer.valueOf(delay.getText().toString()))
                 .minimumMonitoringTime(Integer.valueOf(minimumMonitoringTime.getText().toString()))
+                .minimumInterval(Integer.valueOf(minimumInterval.getText().toString()))
                 .listener(new AppRate.OnShowListener() {
                     @Override
                     public void onRateAppShowing() {

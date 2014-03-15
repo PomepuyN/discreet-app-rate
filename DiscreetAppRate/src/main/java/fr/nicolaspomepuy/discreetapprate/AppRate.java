@@ -1,5 +1,6 @@
 package fr.nicolaspomepuy.discreetapprate;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -8,10 +9,15 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -33,6 +39,7 @@ public class AppRate {
     protected static final String KEY_LAST_CRASH = "last_crash";
     private static final String KEY_MONITOR_START = "monitor_start";
     private static final String KEY_MONITOR_TOTAL = "monitor_total";
+    private static final String KEY_LAST_COUNT_UPDATE = "last_count_update";
     private Activity activity;
     private String text;
     private int initialLaunchCount = 5;
@@ -47,6 +54,7 @@ public class AppRate {
     private long pauseAfterCrash;
     private boolean fromTop = false;
     private long minimumMonitoringTime;
+    private long minimumInterval;
 
     private AppRate(Activity activity) {
         this.activity = activity;
@@ -196,6 +204,17 @@ public class AppRate {
         return this;
     }
 
+    /**
+     * Set the minimum interval to increment the count
+     *
+     * @param minimumInterval the minimum interval in seconds
+     * @return the {@link AppRate} instance
+     */
+    public AppRate minimumInterval(long minimumInterval) {
+        this.minimumInterval = minimumInterval;
+        return this;
+    }
+
     /*
      *
      * ******************** ACTIONS ********************
@@ -231,7 +250,9 @@ public class AppRate {
             return;
         }
 
-        incrementViews();
+        if (!incrementViews()) {
+            return;
+        }
 
 
         Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), activity.getPackageName());
@@ -292,6 +313,7 @@ public class AppRate {
         if (!Utils.isGooglePlayInstalled(activity)) {
             if (debug) LogD("Play Store is not installed. Won't do anything");
         }
+        if (debug) LogD("Force Show");
         showAppRate();
     }
 
@@ -356,10 +378,17 @@ public class AppRate {
      *
      */
 
-    private void incrementViews() {
+    private boolean incrementViews() {
+
+        if (System.currentTimeMillis() - settings.getLong(KEY_LAST_COUNT_UPDATE, 0L) < minimumInterval*1000) {
+            if (debug) LogD("Count not incremented due to minimum interval not reached");
+            return false;
+        }
 
         editor.putInt(KEY_COUNT, settings.getInt(KEY_COUNT, 0) + 1);
+        editor.putLong(KEY_LAST_COUNT_UPDATE, System.currentTimeMillis());
         editor.commit();
+        return true;
     }
 
 
@@ -369,6 +398,7 @@ public class AppRate {
     }
 
 
+    @SuppressLint("NewApi")
     private void showAppRate() {
         final ViewGroup mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
 
@@ -425,6 +455,55 @@ public class AppRate {
 
             container.setBackgroundColor(0Xaa000000);
 
+        }
+
+        // Manage translucent themes
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+
+            Window win = activity.getWindow();
+            WindowManager.LayoutParams winParams = win.getAttributes();
+
+            if (fromTop) {
+                boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                if (isTranslucent) {
+                    if (debug) LogD("Activity is translucent");
+                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+
+                    int actionBarHeight = 0;
+                    //ActionBar size
+                    if (activity.getActionBar() != null) {
+                        actionBarHeight = activity.getActionBar().getHeight();
+                    }
+
+                    lp.topMargin = Utils.getStatusBarHeight(activity)+actionBarHeight;
+                    container.setLayoutParams(lp);
+                }
+            } else {
+                boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                if (isTranslucent) {
+                    if (debug) LogD("Activity is translucent");
+                    Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                    int orientation = display.getRotation();
+
+                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+
+
+                    switch (orientation) {
+                        case Surface.ROTATION_0:
+                        case Surface.ROTATION_180:
+                            lp.bottomMargin = Utils.getSoftbuttonsbarHeight(activity);
+                            container.setLayoutParams(lp);
+                            break;
+                        case Surface.ROTATION_90:
+                        case Surface.ROTATION_270:
+                            lp.rightMargin = Utils.getSoftbuttonsbarWidth(activity);
+                            container.setLayoutParams(lp);
+                            break;
+                    }
+
+
+                }
+            }
         }
 
 

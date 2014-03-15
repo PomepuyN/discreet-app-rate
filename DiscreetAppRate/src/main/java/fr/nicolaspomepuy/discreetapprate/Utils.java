@@ -1,11 +1,15 @@
 package fr.nicolaspomepuy.discreetapprate;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -14,6 +18,11 @@ import java.util.Date;
  * Created by nicolas on 06/03/14.
  */
 public class Utils {
+
+    private static final String STATUS_BAR_HEIGHT_RES_NAME = "status_bar_height";
+    private static final String NAV_BAR_HEIGHT_RES_NAME = "navigation_bar_height";
+    private static final String NAV_BAR_HEIGHT_LANDSCAPE_RES_NAME = "navigation_bar_height_landscape";
+    private static final String NAV_BAR_WIDTH_RES_NAME = "navigation_bar_width";
 
     /**
      * Convert a size in dp to a size in pixels
@@ -84,5 +93,40 @@ public class Utils {
         }
 
         return true;
+    }
+
+    @SuppressLint("NewApi")
+    public static int getSoftbuttonsbarHeight(Activity activity) {
+        if (ViewConfiguration.get(activity).hasPermanentMenuKey()) {
+            return 0;
+        }
+        return getInternalDimensionSize(activity.getResources(), NAV_BAR_HEIGHT_RES_NAME);
+    }
+
+    @SuppressLint("NewApi")
+    public static int getSoftbuttonsbarWidth(Activity activity) {
+        if (ViewConfiguration.get(activity).hasPermanentMenuKey()) {
+            return 0;
+        }
+        return getInternalDimensionSize(activity.getResources(), NAV_BAR_WIDTH_RES_NAME);
+    }
+
+    @SuppressLint("NewApi")
+    public static int getStatusBarHeight(Activity activity) {
+        return getInternalDimensionSize(activity.getResources(), STATUS_BAR_HEIGHT_RES_NAME);
+    }
+
+
+    public static int getInternalDimensionSize(Resources res, String key) {
+        int result = 0;
+        int resourceId = res.getIdentifier(key, "dimen", "android");
+        if (resourceId > 0) {
+            result = res.getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    public static boolean hasFlag(int flags, int flag) {
+        return (flags & flag) == flag;
     }
 }
