@@ -57,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
     private TextView monitoredTime;
     private EditText minimumMonitoringTime;
     private EditText minimumInterval;
+    private CheckBox useCustomView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +148,7 @@ public class MainActivity extends ActionBarActivity {
         minimumMonitoringTime = (EditText) findViewById(R.id.minimum_monitoring_time);
         minimumInterval = (EditText) findViewById(R.id.minimum_interval);
         onTop = (CheckBox) findViewById(R.id.on_top);
+        useCustomView = (CheckBox) findViewById(R.id.use_custom_view);
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -226,11 +228,25 @@ public class MainActivity extends ActionBarActivity {
                 policy = RetryPolicy.NONE;
                 break;
         }
+
+        View customView = null;
+        if (useCustomView.isChecked()) {
+            customView = View.inflate(this, R.layout.custom_view, null);
+            customView.findViewById(R.id.never).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AppRate.with(MainActivity.this).neverShowAgain();
+                    updateValueDisplay();
+                }
+            });
+        }
+
         return AppRate.with(this)
                 .initialLaunchCount(Integer.valueOf(initialCount.getText().toString()))
                 .text(text.getText().toString())
                 .retryPolicy(policy)
                 .debug(true)
+                .view(customView)
                 .fromTop(onTop.isChecked())
                 .pauseTimeAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString()))
                 .atLeastInstalledSince(Integer.valueOf(installTime.getText().toString()))

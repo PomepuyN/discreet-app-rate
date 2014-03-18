@@ -55,6 +55,7 @@ public class AppRate {
     private boolean fromTop = false;
     private long minimumMonitoringTime;
     private long minimumInterval;
+    private View view;
 
     private AppRate(Activity activity) {
         this.activity = activity;
@@ -216,6 +217,17 @@ public class AppRate {
         return this;
     }
 
+    /**
+     * Set the view to display
+     *
+     * @param view the view to display
+     * @return the {@link AppRate} instance
+     */
+    public AppRate view(View view) {
+        this.view = view;
+        return this;
+    }
+
     /*
      *
      * ******************** ACTIONS ********************
@@ -233,7 +245,8 @@ public class AppRate {
 //            return;
 //        }
 
-        if (debug) LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
+        if (debug)
+            LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
         if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000 < pauseAfterCrash) {
             if (debug) LogD("A recent crash avoids anything to be done.");
             return;
@@ -384,7 +397,7 @@ public class AppRate {
 
     private boolean incrementViews() {
 
-        if (System.currentTimeMillis() - settings.getLong(KEY_LAST_COUNT_UPDATE, 0L) < minimumInterval*1000) {
+        if (System.currentTimeMillis() - settings.getLong(KEY_LAST_COUNT_UPDATE, 0L) < minimumInterval * 1000) {
             if (debug) LogD("Count not incremented due to minimum interval not reached");
             return false;
         }
@@ -404,65 +417,90 @@ public class AppRate {
 
     @SuppressLint("NewApi")
     private void showAppRate() {
-        final ViewGroup mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
-
-
-        ImageView close = (ImageView) mainView.findViewById(R.id.close);
-        TextView textView = (TextView) mainView.findViewById(R.id.text);
-        RelativeLayout container = (RelativeLayout) mainView.findViewById(R.id.container);
-        if (fromTop) {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
-            lp.gravity = Gravity.TOP;
-            container.setLayoutParams(lp);
+        final ViewGroup mainView;
+        if (view != null) {
+            mainView = new FrameLayout(activity);
+            mainView.addView(view);
         } else {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
-            lp.gravity = Gravity.BOTTOM;
-            container.setLayoutParams(lp);
+            mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
         }
 
-        textView.setText(text);
 
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideAllViews(mainView);
-                if (onShowListener != null) onShowListener.onRateAppDismissed();
+        View close = (View) mainView.findViewById(R.id.dar_close);
+        TextView rateElement = (TextView) mainView.findViewById(R.id.dar_rate_element);
+        ViewGroup container = (ViewGroup) mainView.findViewById(R.id.dar_container);
+
+        if (container != null) {
+            if (fromTop) {
+                if (container.getParent() instanceof FrameLayout) {
+                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                    lp.gravity = Gravity.TOP;
+                    container.setLayoutParams(lp);
+                } else if (container.getParent() instanceof RelativeLayout) {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    container.setLayoutParams(lp);
+                }
+            } else {
+                if (container.getParent() instanceof FrameLayout) {
+                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                    lp.gravity = Gravity.BOTTOM;
+                    container.setLayoutParams(lp);
+                } else if (container.getParent() instanceof RelativeLayout) {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    container.setLayoutParams(lp);
+                }
             }
-        });
-
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName())));
-                hideAllViews(mainView);
-                editor.putBoolean(KEY_CLICKED, true);
-                editor.commit();
-                if (onShowListener != null) onShowListener.onRateAppClicked();
-
-            }
-        });
-
-        if (theme == AppRateTheme.LIGHT) {
-            PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
-            Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
-            d.setColorFilter(Color.BLACK, mMode);
-            close.setImageDrawable(d);
-
-            textView.setTextColor(Color.BLACK);
-
-            container.setBackgroundColor(0X88ffffff);
-
-        } else {
-            Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
-            d.clearColorFilter();
-            close.setImageDrawable(d);
-
-            container.setBackgroundColor(0Xaa000000);
-
         }
 
+        if (rateElement != null) {
+            rateElement.setText(text);
+            rateElement.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName())));
+                    hideAllViews(mainView);
+                    editor.putBoolean(KEY_CLICKED, true);
+                    editor.commit();
+                    if (onShowListener != null) onShowListener.onRateAppClicked();
+
+                }
+            });
+        }
+
+        if (close != null) {
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    hideAllViews(mainView);
+                    if (onShowListener != null) onShowListener.onRateAppDismissed();
+                }
+            });
+
+        }
+        if (view == null) {
+            if (theme == AppRateTheme.LIGHT) {
+                PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
+                Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
+                d.setColorFilter(Color.BLACK, mMode);
+                ((ImageView)close).setImageDrawable(d);
+
+                rateElement.setTextColor(Color.BLACK);
+
+                container.setBackgroundColor(0X88ffffff);
+
+            } else {
+                Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
+                d.clearColorFilter();
+                ((ImageView)close).setImageDrawable(d);
+
+                container.setBackgroundColor(0Xaa000000);
+
+            }
+        }
         // Manage translucent themes
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && container != null) {
 
             Window win = activity.getWindow();
             WindowManager.LayoutParams winParams = win.getAttributes();
@@ -471,7 +509,7 @@ public class AppRate {
                 boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                 if (isTranslucent) {
                     if (debug) LogD("Activity is translucent");
-                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+
 
                     int actionBarHeight = 0;
                     //ActionBar size
@@ -479,8 +517,15 @@ public class AppRate {
                         actionBarHeight = activity.getActionBar().getHeight();
                     }
 
-                    lp.topMargin = Utils.getStatusBarHeight(activity)+actionBarHeight;
-                    container.setLayoutParams(lp);
+                    if (container.getParent() instanceof FrameLayout) {
+                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                        lp.topMargin = Utils.getStatusBarHeight(activity) + actionBarHeight;
+                        container.setLayoutParams(lp);
+                    } else if (container.getParent() instanceof RelativeLayout) {
+                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                        lp.topMargin = Utils.getStatusBarHeight(activity) + actionBarHeight;
+                        container.setLayoutParams(lp);
+                    }
                 }
             } else {
                 boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -489,20 +534,27 @@ public class AppRate {
                     Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
                     int orientation = display.getRotation();
 
-                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                    ViewGroup.MarginLayoutParams lp = null;
+                    if (container.getParent() instanceof FrameLayout) {
+                        lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                    } else if (container.getParent() instanceof RelativeLayout) {
+                        lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                    }
 
 
-                    switch (orientation) {
-                        case Surface.ROTATION_0:
-                        case Surface.ROTATION_180:
-                            lp.bottomMargin = Utils.getSoftbuttonsbarHeight(activity);
-                            container.setLayoutParams(lp);
-                            break;
-                        case Surface.ROTATION_90:
-                        case Surface.ROTATION_270:
-                            lp.rightMargin = Utils.getSoftbuttonsbarWidth(activity);
-                            container.setLayoutParams(lp);
-                            break;
+                    if (lp != null) {
+                        switch (orientation) {
+                            case Surface.ROTATION_0:
+                            case Surface.ROTATION_180:
+                                lp.bottomMargin = Utils.getSoftbuttonsbarHeight(activity);
+                                container.setLayoutParams(lp);
+                                break;
+                            case Surface.ROTATION_90:
+                            case Surface.ROTATION_270:
+                                lp.rightMargin = Utils.getSoftbuttonsbarWidth(activity);
+                                container.setLayoutParams(lp);
+                                break;
+                        }
                     }
 
 
@@ -556,13 +608,15 @@ public class AppRate {
         activity.addContentView(mainView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 
-        Animation fadeInAnimation;
-        if (fromTop) {
-            fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in_from_top);
-        } else {
-            fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
+        if (mainView != null) {
+            Animation fadeInAnimation;
+            if (fromTop) {
+                fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in_from_top);
+            } else {
+                fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
+            }
+            mainView.startAnimation(fadeInAnimation);
         }
-        mainView.startAnimation(fadeInAnimation);
 
         if (onShowListener != null) onShowListener.onRateAppShowing();
     }
