@@ -148,6 +148,7 @@ public class AppRate {
 
     /**
      * Add a constraint to show the view only if the app is installed for more than
+     * /!\ This is only available for 2.2+ devices
      *
      * @param installedSince the time in seconds
      * @return the {@link AppRate} instance
@@ -227,10 +228,10 @@ public class AppRate {
      */
     public void checkAndShow() {
 
-        if (!Utils.isGooglePlayInstalled(activity)) {
-            if (debug) LogD("Play Store is not installed. Won't do anything");
-            return;
-        }
+//        if (!Utils.isGooglePlayInstalled(activity)) {
+//            if (debug) LogD("Play Store is not installed. Won't do anything");
+//            return;
+//        }
 
         if (debug) LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
         if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000 < pauseAfterCrash) {
@@ -255,13 +256,16 @@ public class AppRate {
         }
 
 
-        Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), activity.getPackageName());
-        Date now = new Date();
-        if (now.getTime() - installDate.getTime() < installedSince * 1000) {
-            if (debug)
-                LogD("Date not reached. Time elapsed since installation (in sec.): " + ((now.getTime() - installDate.getTime()) / 1000));
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), activity.getPackageName());
+            Date now = new Date();
+            if (now.getTime() - installDate.getTime() < installedSince * 1000) {
+                if (debug)
+                    LogD("Date not reached. Time elapsed since installation (in sec.): " + ((now.getTime() - installDate.getTime()) / 1000));
+                return;
+            }
         }
+
         if (!settings.getBoolean(KEY_ELAPSED_TIME, false)) {
             // It's the first time the time is elapsed
             editor.putBoolean(KEY_ELAPSED_TIME, true);
