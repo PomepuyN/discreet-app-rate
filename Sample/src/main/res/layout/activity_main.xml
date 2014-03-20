@@ -135,6 +135,15 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Display"
+                android:textColor="#ff33b5e5"
+                android:textStyle="bold"
+                android:layout_gravity="left"
+                android:textSize="16sp"/>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -154,6 +163,94 @@
                     android:text="@string/dra_rate_app"
                     android:layout_centerVertical="true"/>
             </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/theme"
+                    android:text="Theme"
+                    android:layout_centerVertical="true"/>
+
+                <Spinner
+                    android:id="@+id/theme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/on_top"
+                    android:text="View on top"
+                    android:layout_centerVertical="true"/>
+
+                <CheckBox
+                    android:id="@+id/on_top"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/use_custom_view"
+                    android:text="Custom view"
+                    android:layout_centerVertical="true"/>
+
+                <CheckBox
+                    android:id="@+id/use_custom_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/delay"
+                    android:text="Delay (in ms)"
+                    android:layout_centerVertical="true"/>
+
+                <EditText
+                    android:id="@+id/delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="0"
+                    android:numeric="integer"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Behavior"
+                android:textColor="#ff33b5e5"
+                android:textStyle="bold"
+                android:layout_gravity="left"
+                android:textSize="16sp"/>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -192,44 +289,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"/>
             </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/theme"
-                    android:text="Theme"
-                    android:layout_centerVertical="true"/>
-
-                <Spinner
-                    android:id="@+id/theme"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/delay"
-                    android:text="Delay (in ms)"
-                    android:layout_centerVertical="true"/>
-
-                <EditText
-                    android:id="@+id/delay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:text="0"
-                    android:numeric="integer"
-                    android:layout_centerVertical="true"/>
-            </RelativeLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -272,24 +332,7 @@
                     android:layout_centerVertical="true"/>
             </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/on_top"
-                    android:text="View on top"
-                    android:layout_centerVertical="true"/>
-
-                <CheckBox
-                    android:id="@+id/on_top"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
-            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -332,24 +375,7 @@
                     android:numeric="integer"
                     android:layout_centerVertical="true"/>
             </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/use_custom_view"
-                    android:text="Custom view"
-                    android:layout_centerVertical="true"/>
-
-                <CheckBox
-                    android:id="@+id/use_custom_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
-            </RelativeLayout>
 
         </LinearLayout>
 
