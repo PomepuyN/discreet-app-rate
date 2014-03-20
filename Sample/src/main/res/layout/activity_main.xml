@@ -199,6 +199,24 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/theme"
+                    android:text="Theme"
+                    android:layout_centerVertical="true"/>
+
+                <Spinner
+                    android:id="@+id/theme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_toLeftOf="@+id/delay"
                     android:text="Delay (in ms)"
                     android:layout_centerVertical="true"/>

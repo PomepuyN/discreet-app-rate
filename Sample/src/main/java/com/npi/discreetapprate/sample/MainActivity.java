@@ -34,6 +34,7 @@ import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import fr.nicolaspomepuy.discreetapprate.AppRate;
+import fr.nicolaspomepuy.discreetapprate.AppRateTheme;
 import fr.nicolaspomepuy.discreetapprate.RetryPolicy;
 
 public class MainActivity extends ActionBarActivity {
@@ -58,6 +59,7 @@ public class MainActivity extends ActionBarActivity {
     private EditText minimumMonitoringTime;
     private EditText minimumInterval;
     private CheckBox useCustomView;
+    private Spinner theme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +144,7 @@ public class MainActivity extends ActionBarActivity {
         text = (EditText) findViewById(R.id.text);
         delay = (EditText) findViewById(R.id.delay);
         retryPolicy = (Spinner) findViewById(R.id.retry_policy);
+        theme = (Spinner) findViewById(R.id.theme);
         actionSpinner = (Spinner) findViewById(R.id.action_chooser);
         installTime = (EditText) findViewById(R.id.install_time);
         pauseAfterCrash = (EditText) findViewById(R.id.pause_after_crash);
@@ -155,6 +158,11 @@ public class MainActivity extends ActionBarActivity {
                 R.array.retry_policies, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         retryPolicy.setAdapter(adapter);
+
+        ArrayAdapter<CharSequence> adapterTheme = ArrayAdapter.createFromResource(this,
+                R.array.themes, android.R.layout.simple_spinner_item);
+        adapterTheme.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        theme.setAdapter(adapterTheme);
 
         ArrayAdapter<CharSequence> actionAdapter = ArrayAdapter.createFromResource(this,
                 R.array.actions, android.R.layout.simple_spinner_item);
@@ -229,6 +237,13 @@ public class MainActivity extends ActionBarActivity {
                 break;
         }
 
+        AppRateTheme choosedTheme = AppRateTheme.DARK;
+        switch (theme.getSelectedItemPosition()) {
+            case 1:
+                choosedTheme = AppRateTheme.LIGHT;
+                break;
+        }
+
         View customView = null;
         if (useCustomView.isChecked()) {
             customView = View.inflate(this, R.layout.custom_view, null);
@@ -247,6 +262,7 @@ public class MainActivity extends ActionBarActivity {
                 .retryPolicy(policy)
                 .debug(true)
                 .view(customView)
+                .theme(choosedTheme)
                 .fromTop(onTop.isChecked())
                 .pauseTimeAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString()))
                 .atLeastInstalledSince(Integer.valueOf(installTime.getText().toString()))

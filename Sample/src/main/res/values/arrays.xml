@@ -12,4 +12,8 @@
         <item>.neverShowAgain()</item>
         <item>Simulate a crash</item>
     </string-array>
+    <string-array name="themes">
+        <item>Dark</item>
+        <item>Light</item>
+    </string-array>
 </resources>

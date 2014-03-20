@@ -490,12 +490,16 @@ public class AppRate {
 
                 container.setBackgroundColor(0X88ffffff);
 
+                close.setBackground(activity.getResources().getDrawable(R.drawable.selectable_button_light));
+
             } else {
                 Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
                 d.clearColorFilter();
                 ((ImageView)close).setImageDrawable(d);
 
                 container.setBackgroundColor(0Xaa000000);
+
+                close.setBackground(activity.getResources().getDrawable(R.drawable.selectable_button_dark));
 
             }
         }
