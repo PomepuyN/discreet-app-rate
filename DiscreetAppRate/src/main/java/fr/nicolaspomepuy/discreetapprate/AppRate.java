@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.InflateException;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +57,8 @@ public class AppRate {
     private boolean fromTop = false;
     private long minimumMonitoringTime;
     private long minimumInterval;
-    private View view;
+    private int view;
+    private ViewGroup mainView;
 
     private AppRate(Activity activity) {
         this.activity = activity;
@@ -223,7 +226,7 @@ public class AppRate {
      * @param view the view to display
      * @return the {@link AppRate} instance
      */
-    public AppRate view(View view) {
+    public AppRate view(int view) {
         this.view = view;
         return this;
     }
@@ -389,6 +392,10 @@ public class AppRate {
         }
     }
 
+    public void hide() {
+        hideAllViews(mainView);
+    }
+
     /*
      *
      * ******************** PRIVATE ********************
@@ -417,10 +424,17 @@ public class AppRate {
 
     @SuppressLint("NewApi")
     private void showAppRate() {
-        final ViewGroup mainView;
-        if (view != null) {
+        if (view != 0) {
             mainView = new FrameLayout(activity);
-            mainView.addView(view);
+            try {
+                activity.getLayoutInflater().inflate(view, mainView);
+            } catch (InflateException e) {
+                mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
+                view = 0;
+            } catch (Resources.NotFoundException e) {
+                mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
+                view = 0;
+            }
         } else {
             mainView = (ViewGroup) activity.getLayoutInflater().inflate(R.layout.app_rate, null);
         }
@@ -479,12 +493,12 @@ public class AppRate {
             });
 
         }
-        if (view == null) {
+        if (view == 0) {
             if (theme == AppRateTheme.LIGHT) {
                 PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
                 Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
                 d.setColorFilter(Color.BLACK, mMode);
-                ((ImageView)close).setImageDrawable(d);
+                ((ImageView) close).setImageDrawable(d);
 
                 rateElement.setTextColor(Color.BLACK);
 
@@ -495,7 +509,7 @@ public class AppRate {
             } else {
                 Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
                 d.clearColorFilter();
-                ((ImageView)close).setImageDrawable(d);
+                ((ImageView) close).setImageDrawable(d);
 
                 container.setBackgroundColor(0Xaa000000);
 
@@ -622,11 +636,11 @@ public class AppRate {
             mainView.startAnimation(fadeInAnimation);
         }
 
-        if (onShowListener != null) onShowListener.onRateAppShowing();
+        if (onShowListener != null) onShowListener.onRateAppShowing(this, mainView);
     }
 
     public interface OnShowListener {
-        void onRateAppShowing();
+        void onRateAppShowing(AppRate appRate, View view);
 
         void onRateAppDismissed();
 

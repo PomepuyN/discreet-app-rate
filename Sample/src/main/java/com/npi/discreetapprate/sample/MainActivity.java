@@ -244,16 +244,10 @@ public class MainActivity extends ActionBarActivity {
                 break;
         }
 
-        View customView = null;
+        int customView = 0;
         if (useCustomView.isChecked()) {
-            customView = View.inflate(this, R.layout.custom_view, null);
-            customView.findViewById(R.id.never).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AppRate.with(MainActivity.this).neverShowAgain();
-                    updateValueDisplay();
-                }
-            });
+            customView = R.layout.custom_view;
+
         }
 
         return AppRate.with(this)
@@ -271,10 +265,23 @@ public class MainActivity extends ActionBarActivity {
                 .minimumInterval(Integer.valueOf(minimumInterval.getText().toString()))
                 .listener(new AppRate.OnShowListener() {
                     @Override
-                    public void onRateAppShowing() {
+                    public void onRateAppShowing(final AppRate appRate, View view) {
                         if (!onTop.isChecked()) {
                             // View is showing => hide the buttons
                             hideButtonBar();
+                        }
+
+                        View neverView = view.findViewById(R.id.never);
+                        if (neverView != null) {
+                           neverView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    AppRate.with(MainActivity.this).neverShowAgain();
+                                    updateValueDisplay();
+                                    appRate.hide();
+                                    showButtonBar();
+                                }
+                            });
                         }
                     }
 
