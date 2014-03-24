@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.view.ViewConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -23,6 +22,7 @@ public class Utils {
     private static final String NAV_BAR_HEIGHT_RES_NAME = "navigation_bar_height";
     private static final String NAV_BAR_HEIGHT_LANDSCAPE_RES_NAME = "navigation_bar_height_landscape";
     private static final String NAV_BAR_WIDTH_RES_NAME = "navigation_bar_width";
+    private static final String SHOW_NAV_BAR_RES_NAME = "config_showNavigationBar";
 
     /**
      * Convert a size in dp to a size in pixels
@@ -59,17 +59,15 @@ public class Utils {
         // field wasn't found
         return null;
     }
+
     public static boolean isGooglePlayInstalled(Context context) {
         PackageManager pm = context.getPackageManager();
         boolean app_installed = false;
-        try
-        {
+        try {
             PackageInfo info = pm.getPackageInfo("com.android.vending", PackageManager.GET_ACTIVITIES);
             String label = (String) info.applicationInfo.loadLabel(pm);
             app_installed = (label != null && !label.equals("Market"));
-        }
-        catch (PackageManager.NameNotFoundException e)
-        {
+        } catch (PackageManager.NameNotFoundException e) {
             app_installed = false;
         }
         return app_installed;
@@ -97,7 +95,7 @@ public class Utils {
 
     @SuppressLint("NewApi")
     public static int getSoftbuttonsbarHeight(Activity activity) {
-        if (ViewConfiguration.get(activity).hasPermanentMenuKey()) {
+        if (getInternalBoolean(activity.getResources(), SHOW_NAV_BAR_RES_NAME)) {
             return 0;
         }
         return getInternalDimensionSize(activity.getResources(), NAV_BAR_HEIGHT_RES_NAME);
@@ -105,7 +103,7 @@ public class Utils {
 
     @SuppressLint("NewApi")
     public static int getSoftbuttonsbarWidth(Activity activity) {
-        if (ViewConfiguration.get(activity).hasPermanentMenuKey()) {
+        if (getInternalBoolean(activity.getResources(), SHOW_NAV_BAR_RES_NAME)) {
             return 0;
         }
         return getInternalDimensionSize(activity.getResources(), NAV_BAR_WIDTH_RES_NAME);
@@ -124,6 +122,11 @@ public class Utils {
             result = res.getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    private static boolean getInternalBoolean(Resources res, String key) {
+        int resourceId = res.getIdentifier(key, "bool", "android");
+        return (resourceId > 0) ? res.getBoolean(resourceId) : false;
     }
 
     public static boolean hasFlag(int flags, int flag) {
