@@ -293,7 +293,7 @@ public class AppRate {
 
             }
 
-            editor.commit();
+            commitEditor();
 
         }
 
@@ -323,7 +323,7 @@ public class AppRate {
         editor.putInt(KEY_COUNT, 0);
         editor.putBoolean(KEY_CLICKED, false);
         editor.putLong(KEY_LAST_CRASH, 0L);
-        editor.commit();
+        commitEditor();
     }
 
     /**
@@ -342,7 +342,7 @@ public class AppRate {
      */
     public void neverShowAgain() {
         editor.putBoolean(KEY_CLICKED, true);
-        editor.commit();
+        commitEditor();
     }
 
     /**
@@ -356,7 +356,7 @@ public class AppRate {
             endMonitoring();
         }
         editor.putLong(KEY_MONITOR_START, System.currentTimeMillis());
-        editor.commit();
+        commitEditor();
     }
 
     /**
@@ -364,7 +364,7 @@ public class AppRate {
      */
     public void endMonitoring() {
         if (debug) LogD("End monitoring");
-        editor.commit();
+        commitEditor();
         long start = settings.getLong(KEY_MONITOR_START, 0);
         if (start == 0) {
             if (debug) LogD("Monitor error. End monitoring called before start.");
@@ -372,7 +372,7 @@ public class AppRate {
         }
         editor.putLong(KEY_MONITOR_TOTAL, settings.getLong(KEY_MONITOR_TOTAL, 0) + (System.currentTimeMillis() - start));
         editor.putLong(KEY_MONITOR_START, 0);
-        editor.commit();
+        commitEditor();
     }
 
     /**
@@ -411,7 +411,7 @@ public class AppRate {
 
         editor.putInt(KEY_COUNT, settings.getInt(KEY_COUNT, 0) + 1);
         editor.putLong(KEY_LAST_COUNT_UPDATE, System.currentTimeMillis());
-        editor.commit();
+        commitEditor();
         return true;
     }
 
@@ -478,7 +478,7 @@ public class AppRate {
                     activity.startActivity(intent);
                     hideAllViews(mainView);
                     editor.putBoolean(KEY_CLICKED, true);
-                    editor.commit();
+                    commitEditor();
                     if (onShowListener != null) onShowListener.onRateAppClicked();
 
                 }
@@ -594,6 +594,14 @@ public class AppRate {
             displayViews(mainView);
         }
 
+    }
+
+    private void commitEditor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
     }
 
     private void hideAllViews(final ViewGroup mainView) {
