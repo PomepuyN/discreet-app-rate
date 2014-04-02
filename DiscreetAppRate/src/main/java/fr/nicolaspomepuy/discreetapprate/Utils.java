@@ -95,7 +95,7 @@ public class Utils {
 
     @SuppressLint("NewApi")
     public static int getSoftbuttonsbarHeight(Activity activity) {
-        if (getInternalBoolean(activity.getResources(), SHOW_NAV_BAR_RES_NAME)) {
+        if (!getInternalBoolean(activity.getResources(), SHOW_NAV_BAR_RES_NAME)) {
             return 0;
         }
         return getInternalDimensionSize(activity.getResources(), NAV_BAR_HEIGHT_RES_NAME);
@@ -103,7 +103,7 @@ public class Utils {
 
     @SuppressLint("NewApi")
     public static int getSoftbuttonsbarWidth(Activity activity) {
-        if (getInternalBoolean(activity.getResources(), SHOW_NAV_BAR_RES_NAME)) {
+        if (!getInternalBoolean(activity.getResources(), SHOW_NAV_BAR_RES_NAME)) {
             return 0;
         }
         return getInternalDimensionSize(activity.getResources(), NAV_BAR_WIDTH_RES_NAME);
