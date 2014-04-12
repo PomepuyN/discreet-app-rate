@@ -154,11 +154,23 @@ public class AppRate {
      * Add a constraint to show the view only if the app is installed for more than
      * /!\ This is only available for 2.2+ devices
      *
-     * @param installedSince the time in seconds
+     * @param installedSince the time in milliseconds
      * @return the {@link AppRate} instance
      */
-    public AppRate atLeastInstalledSince(long installedSince) {
+    public AppRate installedSince(long installedSince) {
         this.installedSince = installedSince;
+        return this;
+    }
+
+    /**
+     * @param installedSince the time in seconds
+     * @return the {@link AppRate} instance
+     * @deprecated : Use {@link #installedSince(long)} instead. Be careful to use milliseconds.
+     * Add a constraint to show the view only if the app is installed for more than
+     * /!\ This is only available for 2.2+ devices
+     */
+    public AppRate atLeastInstalledSince(long installedSince) {
+        this.installedSince = installedSince * 1000;
         return this;
     }
 
@@ -186,36 +198,72 @@ public class AppRate {
 
 
     /**
-     * Pause duration after a crash (in sec.)
+     * Pause duration after a crash (in ms.)
      * /!\ Calling {@link #initExceptionHandler(android.content.Context)} is mandatory to make it work.
      * You should do it in your {@link android.app.Application} class
      *
      * @param pauseAfterCrash the time to pause
      * @return the {@link AppRate} instance
      */
-    public AppRate pauseTimeAfterCrash(long pauseAfterCrash) {
+    public AppRate pauseAfterCrash(long pauseAfterCrash) {
         this.pauseAfterCrash = pauseAfterCrash;
+        return this;
+    }
+
+    /**
+     * @param pauseAfterCrash the time to pause
+     * @return the {@link AppRate} instance
+     * @deprecated : Use {@link #pauseAfterCrash(long)} instead. Be careful to use milliseconds.
+     * Pause duration after a crash (in sec.)
+     * /!\ Calling {@link #initExceptionHandler(android.content.Context)} is mandatory to make it work.
+     * You should do it in your {@link android.app.Application} class
+     */
+    public AppRate pauseTimeAfterCrash(long pauseAfterCrash) {
+        this.pauseAfterCrash = pauseAfterCrash * 1000;
+        return this;
+    }
+
+    /**
+     * @param minimumMonitoringTime the minimum time in seconds
+     * @return the {@link AppRate} instance
+     * @deprecated : Use {@link #minMonitoringTime(long)} )} instead. Be careful to use milliseconds.
+     * Set the minimum monitoring time needed before showing the view
+     */
+    public AppRate minimumMonitoringTime(long minimumMonitoringTime) {
+        this.minimumMonitoringTime = minimumMonitoringTime * 1000;
         return this;
     }
 
     /**
      * Set the minimum monitoring time needed before showing the view
      *
-     * @param minimumMonitoringTime the minimum time in seconds
+     * @param minimumMonitoringTime the minimum time in milliseconds
      * @return the {@link AppRate} instance
      */
-    public AppRate minimumMonitoringTime(long minimumMonitoringTime) {
+    public AppRate minMonitoringTime(long minimumMonitoringTime) {
         this.minimumMonitoringTime = minimumMonitoringTime;
+        return this;
+    }
+
+    /**
+     * @param minimumInterval the minimum interval in seconds
+     * @return the {@link AppRate} instance
+     * @deprecated : Use {@link #minInterval(long)} instead. Be careful to use milliseconds.
+     * Set the minimum interval to increment the count
+     */
+    @Deprecated
+    public AppRate minimumInterval(long minimumInterval) {
+        this.minimumInterval = minimumInterval * 1000;
         return this;
     }
 
     /**
      * Set the minimum interval to increment the count
      *
-     * @param minimumInterval the minimum interval in seconds
+     * @param minimumInterval the minimum interval in milliseconds
      * @return the {@link AppRate} instance
      */
-    public AppRate minimumInterval(long minimumInterval) {
+    public AppRate minInterval(long minimumInterval) {
         this.minimumInterval = minimumInterval;
         return this;
     }
@@ -249,13 +297,13 @@ public class AppRate {
 //        }
 
         if (debug)
-            LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
-        if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000 < pauseAfterCrash) {
+            LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L))/1000) + " seconds ago");
+        if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) < pauseAfterCrash) {
             if (debug) LogD("A recent crash avoids anything to be done.");
             return;
         }
 
-        if (settings.getLong(KEY_MONITOR_TOTAL, 0L) / 1000 < minimumMonitoringTime) {
+        if (settings.getLong(KEY_MONITOR_TOTAL, 0L) < minimumMonitoringTime) {
             if (debug)
                 LogD("Monitor time not reached. Nothing will be done");
             return;
@@ -275,9 +323,9 @@ public class AppRate {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
             Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), activity.getPackageName());
             Date now = new Date();
-            if (now.getTime() - installDate.getTime() < installedSince * 1000) {
+            if (now.getTime() - installDate.getTime() < installedSince) {
                 if (debug)
-                    LogD("Date not reached. Time elapsed since installation (in sec.): " + ((now.getTime() - installDate.getTime()) / 1000));
+                    LogD("Date not reached. Time elapsed since installation (in sec.): " + (now.getTime() - installDate.getTime()));
                 return;
             }
         }
@@ -404,7 +452,7 @@ public class AppRate {
 
     private boolean incrementViews() {
 
-        if (System.currentTimeMillis() - settings.getLong(KEY_LAST_COUNT_UPDATE, 0L) < minimumInterval * 1000) {
+        if (System.currentTimeMillis() - settings.getLong(KEY_LAST_COUNT_UPDATE, 0L) < minimumInterval) {
             if (debug) LogD("Count not incremented due to minimum interval not reached");
             return false;
         }

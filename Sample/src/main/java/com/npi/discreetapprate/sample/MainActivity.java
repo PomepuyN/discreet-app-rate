@@ -258,11 +258,11 @@ public class MainActivity extends ActionBarActivity {
                 .view(customView)
                 .theme(choosedTheme)
                 .fromTop(onTop.isChecked())
-                .pauseTimeAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString()))
-                .atLeastInstalledSince(Integer.valueOf(installTime.getText().toString()))
+                .pauseAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString())*1000)
+                .installedSince(Integer.valueOf(installTime.getText().toString())*1000)
                 .delay(Integer.valueOf(delay.getText().toString()))
-                .minimumMonitoringTime(Integer.valueOf(minimumMonitoringTime.getText().toString()))
-                .minimumInterval(Integer.valueOf(minimumInterval.getText().toString()))
+                .minMonitoringTime(Integer.valueOf(minimumMonitoringTime.getText().toString())*1000)
+                .minInterval(Integer.valueOf(minimumInterval.getText().toString())*1000)
                 .listener(new AppRate.OnShowListener() {
                     @Override
                     public void onRateAppShowing(final AppRate appRate, View view) {
