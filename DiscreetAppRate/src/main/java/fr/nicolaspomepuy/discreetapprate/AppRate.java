@@ -297,7 +297,7 @@ public class AppRate {
 //        }
 
         if (debug)
-            LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L))/1000) + " seconds ago");
+            LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
         if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) < pauseAfterCrash) {
             if (debug) LogD("A recent crash avoids anything to be done.");
             return;
@@ -644,6 +644,7 @@ public class AppRate {
 
     }
 
+    @SuppressLint("NewApi")
     private void commitEditor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
             editor.apply();

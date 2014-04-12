@@ -13,7 +13,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 
-version '1.0.5'
+version '2.0'
 group 'fr.nicolaspomepuy'
 
 android {
@@ -25,7 +25,7 @@ android {
             minSdkVersion 8
             targetSdkVersion 19
             versionCode 1
-            versionName "1.0.5"
+            versionName "2.0"
         }
     }
 }
@@ -34,7 +34,7 @@ android.libraryVariants
 publishing {
     publications {
         maven(MavenPublication) {
-            artifact 'build/libs/DiscreetAppRate-1.0.5.aar'
+            artifact 'build/libs/DiscreetAppRate-2.0.aar'
             artifactId 'discreetapprate'
         }
     }
