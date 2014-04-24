@@ -655,7 +655,7 @@ public class AppRate {
 
     @SuppressLint("NewApi")
     private void commitEditor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
             editor.apply();
         } else {
             editor.commit();
