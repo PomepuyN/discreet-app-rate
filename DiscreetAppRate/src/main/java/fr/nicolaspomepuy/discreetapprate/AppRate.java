@@ -291,10 +291,10 @@ public class AppRate {
      */
     public void checkAndShow() {
 
-//        if (!Utils.isGooglePlayInstalled(activity)) {
-//            if (debug) LogD("Play Store is not installed. Won't do anything");
-//            return;
-//        }
+        if (!Utils.isGooglePlayInstalled(activity)) {
+            if (debug) LogD("Play Store is not installed. Won't do anything");
+            return;
+        }
 
         if (debug)
             LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
