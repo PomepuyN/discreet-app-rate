@@ -587,20 +587,13 @@ public class AppRate {
                 if (isTranslucent) {
                     if (debug) LogD("Activity is translucent");
 
-
-                    int actionBarHeight = 0;
-                    //ActionBar size
-                    if (activity.getActionBar() != null) {
-                        actionBarHeight = activity.getActionBar().getHeight();
-                    }
-
                     if (container.getParent() instanceof FrameLayout) {
                         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
-                        lp.topMargin = Utils.getStatusBarHeight(activity) + actionBarHeight;
+                        lp.topMargin = Utils.getActionStatusBarHeight(activity);
                         container.setLayoutParams(lp);
                     } else if (container.getParent() instanceof RelativeLayout) {
                         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
-                        lp.topMargin = Utils.getStatusBarHeight(activity) + actionBarHeight;
+                        lp.topMargin = Utils.getActionStatusBarHeight(activity);
                         container.setLayoutParams(lp);
                     }
                 }
@@ -652,6 +645,7 @@ public class AppRate {
         }
 
     }
+
 
     @SuppressLint("NewApi")
     private void commitEditor() {
