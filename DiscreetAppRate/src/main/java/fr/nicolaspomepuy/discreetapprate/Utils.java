@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.util.TypedValue;
 
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -114,6 +116,20 @@ public class Utils {
         return getInternalDimensionSize(activity.getResources(), STATUS_BAR_HEIGHT_RES_NAME);
     }
 
+
+    public static int getActionStatusBarHeight(Activity activity) {
+        return getStatusBarHeight(activity) + getActionBarHeight(activity);
+    }
+
+    public static int getActionBarHeight(Activity activity) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            TypedValue tv = new TypedValue();
+            if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                return TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
+            }
+        }
+        return 0;
+    }
 
     public static int getInternalDimensionSize(Resources res, String key) {
         int result = 0;
