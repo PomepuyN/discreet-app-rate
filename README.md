@@ -49,6 +49,5 @@ Please visit the [Wiki section](https://github.com/PomepuyN/discreet-app-rate/wi
     limitations under the License.
 ```
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/PomepuyN/discreet-app-rater/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 [1]: http://nicolaspomepuy.fr/wp-content/uploads/2014/03/screenshot.png
