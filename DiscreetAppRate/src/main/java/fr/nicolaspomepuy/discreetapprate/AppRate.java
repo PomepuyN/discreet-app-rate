@@ -52,6 +52,7 @@ public class AppRate {
     private int delay = 0;
     private long installedSince;
     private boolean debug;
+    private String packageName;
     private AppRateTheme theme = AppRateTheme.DARK;
     private long pauseAfterCrash;
     private boolean fromTop = false;
@@ -64,8 +65,7 @@ public class AppRate {
         this.activity = activity;
     }
 
-    public static AppRate with(Activity activity) {
-
+	public static AppRate with(Activity activity) {
         if (activity == null) {
             throw new IllegalStateException("Activity cannot be null");
         }
@@ -74,6 +74,14 @@ public class AppRate {
         instance.text = activity.getString(R.string.dra_rate_app);
         instance.settings = activity.getSharedPreferences(PREFS_NAME, 0);
         instance.editor = instance.settings.edit();
+        instance.packageName = activity.getPackageName();
+        return instance;
+    }
+	
+	@SuppressLint("NewApi")
+	public static AppRate with(Activity activity, String overridePackageName) {
+		AppRate instance = AppRate.with(activity);
+		instance.packageName = overridePackageName;
         return instance;
     }
 
@@ -289,7 +297,8 @@ public class AppRate {
     /**
      * Check and show if showing the view is needed
      */
-    public void checkAndShow() {
+    @SuppressLint("NewApi")
+	public void checkAndShow() {
 
         if (!Utils.isGooglePlayInstalled(activity)) {
             if (debug) LogD("Play Store is not installed. Won't do anything");
@@ -321,7 +330,7 @@ public class AppRate {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), activity.getPackageName());
+            Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), this.packageName);
             Date now = new Date();
             if (now.getTime() - installDate.getTime() < installedSince) {
                 if (debug)
@@ -518,10 +527,11 @@ public class AppRate {
 
         if (rateElement != null) {
             rateElement.setText(text);
+            final String packageName = this.packageName;
             rateElement.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + activity.getPackageName()));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     activity.startActivity(intent);
                     hideAllViews(mainView);
