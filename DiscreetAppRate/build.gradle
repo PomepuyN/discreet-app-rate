@@ -2,9 +2,6 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.11.+'
-    }
 }
 
 apply plugin: 'android-library'
@@ -121,5 +118,5 @@ uploadArchives {
 
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:appcompat-v7:19.1.+'
 }
