@@ -4,24 +4,24 @@ buildscript {
     }
 }
 
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
 
-version '2.0.2'
+version '2.0.3'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 21
+    buildToolsVersion '21.1.1'
 
     buildTypes {
         defaultConfig {
             minSdkVersion 8
-            targetSdkVersion 19
+            targetSdkVersion 21
             versionCode 1
-            versionName "2.0.2"
+            versionName "2.0.3"
         }
     }
 }
@@ -30,7 +30,7 @@ android.libraryVariants
 publishing {
     publications {
         maven(MavenPublication) {
-            artifact 'build/libs/DiscreetAppRate-2.0.2.aar'
+            artifact 'build/outputs/aar/DiscreetAppRate-release.aar'
             artifactId 'discreetapprate'
             groupId 'fr.nicolaspomepuy'
         }
@@ -118,5 +118,5 @@ uploadArchives {
 
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:19.1.+'
+    compile 'com.android.support:appcompat-v7:21.0.3'
 }
