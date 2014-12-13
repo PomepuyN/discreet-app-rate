@@ -633,7 +633,10 @@ public class AppRate {
 
             if (fromTop) {
                 boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                if (isTranslucent) {
+                int translucentLolliPop = activity.getWindow().getDecorView().getSystemUiVisibility();
+                boolean isTranslucentLolliPop = (translucentLolliPop== View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+
+                if (isTranslucent || isTranslucentLolliPop) {
                     if (debug) LogD("Activity is translucent");
 
                     if (container.getParent() instanceof FrameLayout) {
