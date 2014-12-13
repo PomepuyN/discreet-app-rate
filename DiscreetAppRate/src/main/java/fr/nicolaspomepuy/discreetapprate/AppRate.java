@@ -279,6 +279,45 @@ public class AppRate {
     /**
      * Set the view to display
      *
+     * The view will be inflated and respects two ids. {@code dar_close} and {@code dar_rate_element}.
+     * The text of the {@code dar_rate_element} will be set with {@link #text(String)} or {@link #text(int)}.
+     * 
+     * An example XML layout file might look like
+     * <pre>
+     *     {@code <LinearLayout
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/app_rate_never"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Never" />
+
+                <!-- The id has been set to dar_close to get the lib behavior -->
+                <Button
+                    android:id="@+id/dar_close"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Later" />
+
+                <!-- The id has been set to dar_rate_element to get the lib behavior. Text is managed by AppRate.setText() -->
+                <Button
+                    android:id="@+id/dar_rate_element"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+            </LinearLayout>
+     *     }
+     * </pre>
+     * 
      * @param view the view to display
      * @return the {@link AppRate} instance
      */
