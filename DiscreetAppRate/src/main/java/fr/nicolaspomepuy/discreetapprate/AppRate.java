@@ -370,6 +370,9 @@ public class AppRate {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
             Date installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), this.packageName);
+            if (installDate == null) {
+                installDate = Utils.installTimeFromPackageManager(activity.getPackageManager(), activity.getPackageName());
+            }
             Date now = new Date();
             if (now.getTime() - installDate.getTime() < installedSince) {
                 if (debug)
