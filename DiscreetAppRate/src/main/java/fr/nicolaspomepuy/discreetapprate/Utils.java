@@ -14,6 +14,7 @@ import android.util.TypedValue;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by nicolas on 06/03/14.
@@ -65,12 +66,12 @@ public class Utils {
     public static boolean isGooglePlayInstalled(Context context) {
         PackageManager pm = context.getPackageManager();
         boolean app_installed = false;
-        try {
-            PackageInfo info = pm.getPackageInfo("com.android.vending", PackageManager.GET_ACTIVITIES);
-            String label = (String) info.applicationInfo.loadLabel(pm);
-            app_installed = (label != null && !label.equals("Market"));
-        } catch (PackageManager.NameNotFoundException e) {
-            app_installed = false;
+        List<PackageInfo> packages = pm.getInstalledPackages(0);
+        for (PackageInfo packageInfo : packages) {
+            if (packageInfo.packageName.equals("com.android.vending")) {
+                app_installed = true;
+                break;
+            }
         }
         return app_installed;
     }
