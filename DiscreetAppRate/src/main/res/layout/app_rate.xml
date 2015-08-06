@@ -7,19 +7,36 @@
     <RelativeLayout
         android:id="@+id/dar_container"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="#aa000000"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:id="@+id/dar_rate_element"
-            android:textColor="@android:color/white"
-            android:layout_toLeftOf="@+id/dar_close"/>
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/dar_close"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:id="@+id/dar_rate_element"
+                android:textColor="@android:color/white"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp" />
+
+            <LinearLayout
+                android:id="@+id/dar_star_container"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/dar_close"

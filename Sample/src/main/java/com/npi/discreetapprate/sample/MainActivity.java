@@ -59,6 +59,7 @@ public class MainActivity extends ActionBarActivity {
     private EditText minimumMonitoringTime;
     private EditText minimumInterval;
     private CheckBox useCustomView;
+    private CheckBox starRating;
     private Spinner theme;
 
     @Override
@@ -152,6 +153,7 @@ public class MainActivity extends ActionBarActivity {
         minimumInterval = (EditText) findViewById(R.id.minimum_interval);
         onTop = (CheckBox) findViewById(R.id.on_top);
         useCustomView = (CheckBox) findViewById(R.id.use_custom_view);
+        starRating = (CheckBox) findViewById(R.id.star_rating);
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -263,6 +265,18 @@ public class MainActivity extends ActionBarActivity {
                 .delay(Integer.valueOf(delay.getText().toString()))
                 .minMonitoringTime(Integer.valueOf(minimumMonitoringTime.getText().toString())*1000)
                 .minInterval(Integer.valueOf(minimumInterval.getText().toString())*1000)
+                .starRating(starRating.isChecked())
+                .starRatingListener(new AppRate.OnStarRateListener() {
+                    @Override
+                    public void onPositiveRating(int starRating) {
+                        Toast.makeText(MainActivity.this, "User has performed a positive rating.", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onNegativeRating(int starRating) {
+                        Toast.makeText(MainActivity.this, "User has performed a negative rating.", Toast.LENGTH_LONG).show();
+                    }
+                })
                 .listener(new AppRate.OnShowListener() {
                     @Override
                     public void onRateAppShowing(final AppRate appRate, View view) {
@@ -273,7 +287,7 @@ public class MainActivity extends ActionBarActivity {
 
                         View neverView = view.findViewById(R.id.never);
                         if (neverView != null) {
-                           neverView.setOnClickListener(new View.OnClickListener() {
+                            neverView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     AppRate.with(MainActivity.this).neverShowAgain();

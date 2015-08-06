@@ -9,9 +9,11 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.InflateException;
@@ -59,6 +61,12 @@ public class AppRate {
     private long minimumMonitoringTime;
     private long minimumInterval;
     private int view;
+    private boolean starRating = false;
+    private int maxStars = 5;
+    private int minStarsForPositive = 3;
+    private OnStarRateListener onStarRateListener;
+    private float starRatingDimension;
+    private float starRatingMarginDimension;
     private ViewGroup mainView;
 
     private AppRate(Activity activity) {
@@ -75,6 +83,8 @@ public class AppRate {
         instance.settings = activity.getSharedPreferences(PREFS_NAME, 0);
         instance.editor = instance.settings.edit();
         instance.packageName = activity.getPackageName();
+        instance.starRatingDimension = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, activity.getResources().getDisplayMetrics());
+        instance.starRatingMarginDimension = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, activity.getResources().getDisplayMetrics());
         return instance;
     }
 	
@@ -326,6 +336,42 @@ public class AppRate {
         return this;
     }
 
+    /**
+     * Set whether to allow the user to rate by choosing a star rating
+     *
+     * @param starRating whether to allow a star rating
+     * @return the {@link AppRate} instance
+     */
+    public AppRate starRating(boolean starRating) {
+        return starRating(starRating, maxStars, minStarsForPositive);
+    }
+
+    /**
+     * Set whether to allow the user to rate by choosing a star rating
+     *
+     * @param starRating whether to allow a star rating
+     * @param maxStars the maximum star rating
+     * @param minStarsForPositive the minimum number of stars the user must give for a positive review
+     * @return the {@link AppRate} instance
+     */
+    public AppRate starRating(boolean starRating, int maxStars, int minStarsForPositive) {
+        this.starRating = starRating;
+        this.maxStars = maxStars;
+        this.minStarsForPositive = minStarsForPositive;
+        return this;
+    }
+
+    /**
+     * Set callbacks for when the user enters a star rating
+     *
+     * @param starRateListener a listener to for callbacks when a star rating is submitted
+     * @return the {@link AppRate} instance
+     */
+    public AppRate starRatingListener(OnStarRateListener starRateListener) {
+        this.onStarRateListener = starRateListener;
+        return this;
+    }
+
     /*
      *
      * ******************** ACTIONS ********************
@@ -542,6 +588,9 @@ public class AppRate {
         View close = (View) mainView.findViewById(R.id.dar_close);
         TextView rateElement = (TextView) mainView.findViewById(R.id.dar_rate_element);
         ViewGroup container = (ViewGroup) mainView.findViewById(R.id.dar_container);
+        ViewGroup starContainer = (ViewGroup) mainView.findViewById(R.id.dar_star_container);
+
+        final String packageName = this.packageName;
 
         if (container != null) {
             if (fromTop) {
@@ -569,20 +618,14 @@ public class AppRate {
 
         if (rateElement != null) {
             rateElement.setText(text);
-            final String packageName = this.packageName;
-            rateElement.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    activity.startActivity(intent);
-                    hideAllViews(mainView);
-                    editor.putBoolean(KEY_CLICKED, true);
-                    commitEditor();
-                    if (onShowListener != null) onShowListener.onRateAppClicked();
-
-                }
-            });
+            if ( !starRating ) {
+                rateElement.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        performRating(packageName);
+                    }
+                });
+            }
         }
 
         if (close != null) {
@@ -593,8 +636,57 @@ public class AppRate {
                     if (onShowListener != null) onShowListener.onRateAppDismissed();
                 }
             });
-
         }
+
+        if (starContainer != null ) {
+            if ( starRating ) {
+                starContainer.setVisibility(View.VISIBLE);
+
+                Drawable starDrawable = getDrawableForStarRating(false);
+
+                for ( int i = 1; i <= maxStars; i++ ) {
+                    View starView = new View(activity);
+                    starView.setTag(i);
+                    ViewGroup.LayoutParams lp = new ViewGroup.MarginLayoutParams((int) starRatingDimension + (i == maxStars ? 0 : (int) starRatingMarginDimension), (int) starRatingDimension + (int) (starRatingMarginDimension * 1.5f));
+                    starView.setLayoutParams(lp);
+
+                    InsetDrawable starInsetDrawable = getInsetDrawableForStarRating(starDrawable, i);
+
+                    setBackgroundDrawable(starView, starInsetDrawable);
+
+                    starView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Drawable filledStarDrawable = getDrawableForStarRating(true);
+
+                            int clickedRating = (Integer) view.getTag();
+                            for ( int i = 0; i < clickedRating; i ++ ) {
+                                View starView = ((ViewGroup) view.getParent()).getChildAt(i);
+                                InsetDrawable starInsetFilledDrawable = getInsetDrawableForStarRating(filledStarDrawable, i);
+
+                                setBackgroundDrawable(starView, starInsetFilledDrawable);
+                            }
+
+                            if ( onStarRateListener == null ) {
+                                performRating(packageName);
+                            } else {
+                                if ( clickedRating >= minStarsForPositive ) {
+                                    performRating(packageName);
+                                    onStarRateListener.onPositiveRating(clickedRating);
+                                } else {
+                                    onStarRateListener.onNegativeRating(clickedRating);
+                                }
+                            }
+                        }
+                    });
+
+                    starContainer.addView(starView);
+                }
+            } else {
+                starContainer.setVisibility(View.GONE);
+            }
+        }
+
         if (view == 0) {
             if (theme == AppRateTheme.LIGHT) {
                 PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
@@ -606,12 +698,7 @@ public class AppRate {
 
                 container.setBackgroundColor(0X88ffffff);
 
-
-                if (Build.VERSION.SDK_INT >= 16) {
-                    close.setBackground(activity.getResources().getDrawable(R.drawable.selectable_button_light));
-                } else {
-                    close.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.selectable_button_light));
-                }
+                setBackgroundDrawable(close, activity.getResources().getDrawable(R.drawable.selectable_button_light));
 
             } else {
                 Drawable d = activity.getResources().getDrawable(R.drawable.ic_action_remove);
@@ -620,11 +707,7 @@ public class AppRate {
 
                 container.setBackgroundColor(0Xaa000000);
 
-                if (Build.VERSION.SDK_INT >= 16) {
-                    close.setBackground(activity.getResources().getDrawable(R.drawable.selectable_button_dark));
-                } else {
-                    close.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.selectable_button_dark));
-                }
+                setBackgroundDrawable(close, activity.getResources().getDrawable(R.drawable.selectable_button_dark));
 
             }
         }
@@ -762,6 +845,46 @@ public class AppRate {
         void onRateAppDismissed();
 
         void onRateAppClicked();
+    }
+
+    public interface OnStarRateListener {
+        void onPositiveRating(int starRating);
+
+        void onNegativeRating(int starRating);
+    }
+
+    private void performRating (String packageName) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + packageName));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(intent);
+        hideAllViews(mainView);
+        editor.putBoolean(KEY_CLICKED, true);
+        commitEditor();
+        if (onShowListener != null) onShowListener.onRateAppClicked();
+    }
+
+    private Drawable getDrawableForStarRating ( boolean filled ) {
+        Drawable starDrawable = activity.getResources().getDrawable(filled ? R.drawable.ic_star : R.drawable.ic_star_border);
+        if (theme == AppRateTheme.LIGHT) {
+            PorterDuff.Mode mMode = PorterDuff.Mode.SRC_ATOP;
+            starDrawable.setColorFilter(Color.BLACK, mMode);
+        } else {
+            starDrawable.clearColorFilter();
+        }
+
+        return starDrawable;
+    }
+
+    private InsetDrawable getInsetDrawableForStarRating ( Drawable starDrawable, int rating ) {
+        return new InsetDrawable(starDrawable, 0, (int) (starRatingMarginDimension / 2.0f), rating == maxStars ? 0 : (int) starRatingMarginDimension, (int) starRatingMarginDimension);
+    }
+
+    private void setBackgroundDrawable ( View view, Drawable drawable ) {
+        if (Build.VERSION.SDK_INT >= 16) {
+            view.setBackground(drawable);
+        } else {
+            view.setBackgroundDrawable(drawable);
+        }
     }
 
     private void LogD(String s) {
