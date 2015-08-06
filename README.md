@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compile 'fr.nicolaspomepuy:discreetapprate:2.0.4@aar'
+    compile 'fr.nicolaspomepuy:discreetapprate:2.0.5@aar'
 }
 ```
 

@@ -10,7 +10,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 
-version '2.0.4'
+version '2.0.5'
 
 android {
     compileSdkVersion 22
@@ -21,7 +21,7 @@ android {
             minSdkVersion 8
             targetSdkVersion 22
             versionCode 1
-            versionName "2.0.4"
+            versionName "2.0.5"
         }
     }
 }
