@@ -18,6 +18,7 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:id="@+id/dar_rate_element"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white"
             android:layout_toLeftOf="@+id/dar_close"/>
 
