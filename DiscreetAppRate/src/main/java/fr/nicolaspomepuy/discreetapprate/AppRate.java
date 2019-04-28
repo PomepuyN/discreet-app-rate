@@ -544,8 +544,8 @@ public class AppRate {
         ViewGroup container = (ViewGroup) mainView.findViewById(R.id.dar_container);
 
         if (container != null) {
-            switch (position) {
-                case TOP: {
+            switch (position.getDirection()) {
+                case FROM_TOP: {
                     if (container.getParent() instanceof FrameLayout) {
                         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
                         lp.gravity = Gravity.TOP;
@@ -557,7 +557,7 @@ public class AppRate {
                     }
                     break;
                 }
-                case BOTTOM: {
+                case FROM_BOTTOM: {
                     if (container.getParent() instanceof FrameLayout) {
                         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
                         lp.gravity = Gravity.BOTTOM;
@@ -639,8 +639,8 @@ public class AppRate {
             Window win = activity.getWindow();
             WindowManager.LayoutParams winParams = win.getAttributes();
 
-            switch (position) {
-                case TOP: {
+            switch (position.getDirection()) {
+                case FROM_TOP: {
                     boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                     int translucentLolliPop = activity.getWindow().getDecorView().getSystemUiVisibility();
                     boolean isTranslucentLolliPop = (translucentLolliPop == View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
@@ -660,7 +660,7 @@ public class AppRate {
                     }
                     break;
                 }
-                case BOTTOM: {
+                case FROM_BOTTOM: {
                     boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                     if (isTranslucent) {
                         if (debug) LogD("Activity is translucent");

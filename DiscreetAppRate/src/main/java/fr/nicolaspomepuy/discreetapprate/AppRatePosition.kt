@@ -4,19 +4,28 @@ import android.app.Activity
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 
-enum class Position {
-    TOP,
-    BOTTOM
+enum class Direction {
+    FROM_TOP,
+    FROM_BOTTOM
 }
 
-fun Position.hideAnimation(activity: Activity): Animation? = AnimationUtils.loadAnimation(activity, when(this) {
-    Position.TOP -> R.anim.fade_out_from_top
-    Position.BOTTOM -> R.anim.fade_out
+data class Position (var direction: Direction, var margin: Float) {
+    companion object {
+        val top = Position(Direction.FROM_TOP)
+        val bottom = Position(Direction.FROM_BOTTOM)
+
+    }
+    constructor(direction: Direction): this(direction, 0F)
+}
+
+fun Position.hideAnimation(activity: Activity): Animation? = AnimationUtils.loadAnimation(activity, when(this.direction) {
+    Direction.FROM_TOP -> R.anim.fade_out_from_top
+    Direction.FROM_BOTTOM -> R.anim.fade_out
 })
 
-fun Position.showAnimation(activity: Activity): Animation? = AnimationUtils.loadAnimation(activity, when(this) {
-    Position.TOP -> R.anim.fade_in_from_top
-    Position.BOTTOM -> R.anim.fade_in
+fun Position.showAnimation(activity: Activity): Animation? = AnimationUtils.loadAnimation(activity, when(this.direction) {
+    Direction.FROM_TOP -> R.anim.fade_in_from_top
+    Direction.FROM_BOTTOM -> R.anim.fade_in
 })
 
 // Java compatibility

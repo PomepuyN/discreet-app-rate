@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 .debug(true)
                 .view(customView)
                 .theme(choosedTheme)
-                .position(onTop.isChecked() ? Position.TOP : Position.BOTTOM)
+                .position(onTop.isChecked() ? Position.Companion.getTop() : Position.Companion.getBottom())
                 .pauseAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString())*1000)
                 .installedSince(Integer.valueOf(installTime.getText().toString())*1000)
                 .delay(Integer.valueOf(delay.getText().toString()))
