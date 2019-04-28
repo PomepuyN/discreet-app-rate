@@ -549,10 +549,12 @@ public class AppRate {
                     if (container.getParent() instanceof FrameLayout) {
                         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
                         lp.gravity = Gravity.TOP;
+                        lp.topMargin = position.getMargin();
                         container.setLayoutParams(lp);
                     } else if (container.getParent() instanceof RelativeLayout) {
                         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
                         lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                        lp.topMargin = position.getMargin();
                         container.setLayoutParams(lp);
                     }
                     break;
@@ -561,10 +563,12 @@ public class AppRate {
                     if (container.getParent() instanceof FrameLayout) {
                         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
                         lp.gravity = Gravity.BOTTOM;
+                        lp.bottomMargin = position.getMargin();
                         container.setLayoutParams(lp);
                     } else if (container.getParent() instanceof RelativeLayout) {
                         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
                         lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                        lp.bottomMargin = position.getMargin();
                         container.setLayoutParams(lp);
                     }
                     break;
@@ -650,11 +654,11 @@ public class AppRate {
 
                         if (container.getParent() instanceof FrameLayout) {
                             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
-                            lp.topMargin = Utils.getActionStatusBarHeight(activity);
+                            lp.topMargin = Utils.getActionStatusBarHeight(activity) + position.getMargin();
                             container.setLayoutParams(lp);
                         } else if (container.getParent() instanceof RelativeLayout) {
                             RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
-                            lp.topMargin = Utils.getActionStatusBarHeight(activity);
+                            lp.topMargin = Utils.getActionStatusBarHeight(activity) + position.getMargin();
                             container.setLayoutParams(lp);
                         }
                     }
@@ -670,8 +674,10 @@ public class AppRate {
                         ViewGroup.MarginLayoutParams lp = null;
                         if (container.getParent() instanceof FrameLayout) {
                             lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                            lp.bottomMargin = position.getMargin();
                         } else if (container.getParent() instanceof RelativeLayout) {
                             lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                            lp.bottomMargin = position.getMargin();
                         }
 
 
@@ -679,12 +685,12 @@ public class AppRate {
                             switch (orientation) {
                                 case Surface.ROTATION_0:
                                 case Surface.ROTATION_180:
-                                    lp.bottomMargin = Utils.getSoftbuttonsbarHeight(activity);
+                                    lp.bottomMargin = Utils.getSoftbuttonsbarHeight(activity) + position.getMargin() ;
                                     container.setLayoutParams(lp);
                                     break;
                                 case Surface.ROTATION_90:
                                 case Surface.ROTATION_270:
-                                    lp.rightMargin = Utils.getSoftbuttonsbarWidth(activity);
+                                    lp.rightMargin = Utils.getSoftbuttonsbarWidth(activity) + position.getMargin();
                                     container.setLayoutParams(lp);
                                     break;
                             }

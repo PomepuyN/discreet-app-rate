@@ -9,13 +9,14 @@ enum class Direction {
     FROM_BOTTOM
 }
 
-data class Position (var direction: Direction, var margin: Float) {
+// Margin in pixels
+data class Position (var direction: Direction, var margin: Int) {
     companion object {
         val top = Position(Direction.FROM_TOP)
         val bottom = Position(Direction.FROM_BOTTOM)
 
     }
-    constructor(direction: Direction): this(direction, 0F)
+    constructor(direction: Direction): this(direction, 0)
 }
 
 fun Position.hideAnimation(activity: Activity): Animation? = AnimationUtils.loadAnimation(activity, when(this.direction) {
