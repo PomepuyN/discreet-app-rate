@@ -13,110 +13,111 @@ apply plugin: 'signing'
 version '2.0.3'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.1'
+    compileSdkVersion 28
 
     buildTypes {
         defaultConfig {
-            minSdkVersion 8
-            targetSdkVersion 21
+            minSdkVersion 14
+            targetSdkVersion 28
             versionCode 1
             versionName "2.0.3"
+        }
+        release {
         }
     }
 }
 
 android.libraryVariants
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifact 'build/outputs/aar/DiscreetAppRate-release.aar'
-            artifactId 'discreetapprate'
-            groupId 'fr.nicolaspomepuy'
-        }
-    }
-}
-
-def isReleaseBuild() {
-    return version.contains("SNAPSHOT") == false
-}
-
-configurations {
-    archives {
-        extendsFrom configurations.default
-    }
-}
-
-signing {
-    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
-
-uploadArchives {
-    configuration = configurations.archives
-    repositories.mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-        repository(url: sonatypeRepo) {
-            authentication(userName: sonatypeUsername,
-                    password: sonatypePassword)
-        }
-        snapshotRepository(url: sonatypeSnapshotRepo) {
-            authentication(userName: sonatypeUsername,
-                    password: sonatypePassword)
-        }
-
-        pom.project {
-            name 'Discreet App Rater'
-            packaging 'aar'
-            description 'Lightweight and non intrusive app rate reminder for Android'
-            url 'https://github.com/PomepuyN/discreet-app-rate'
-            artifactId 'discreetapprate'
-            groupId 'fr.nicolaspomepuy'
-
-            scm {
-                url 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
-                connection 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
-                developerConnection 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
-            }
-
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-
-            developers {
-                developer {
-                    id 'npomepuy'
-                    name 'Nicolas POMEPUY'
-                    email 'nicolas.pomepuy@gmail.com'
-                }
-            }
-        }
-    }
-
-    android.libraryVariants.all { variant ->
-
-        task("generate${variant.name}Javadoc", type: Javadoc) {
-            title = "$name $version API"
-            description "Generates Javadoc for $variant.name."
-            source = variant.javaCompile.source
-            ext.androidJar =
-                    "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-            classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
-            options.links("http://docs.oracle.com/javase/7/docs/api/");
-            options.links("http://d.android.com/reference/");
-            exclude '**/BuildConfig.java'
-            exclude '**/R.java'
-        }
-
-    }
-}
+//publishing {
+//    publications {
+//        maven(MavenPublication) {
+//            artifact 'build/outputs/aar/DiscreetAppRate-release.aar'
+//            artifactId 'discreetapprate'
+//            groupId 'fr.nicolaspomepuy'
+//        }
+//    }
+//}
+//
+//def isReleaseBuild() {
+//    return version.contains("SNAPSHOT") == false
+//}
+//
+//configurations {
+//    archives {
+//        extendsFrom configurations.default
+//    }
+//}
+//
+//signing {
+//    required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+//    sign configurations.archives
+//}
+//
+//uploadArchives {
+//    configuration = configurations.archives
+//    repositories.mavenDeployer {
+//        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//
+//        repository(url: sonatypeRepo) {
+//            authentication(userName: sonatypeUsername,
+//                    password: sonatypePassword)
+//        }
+//        snapshotRepository(url: sonatypeSnapshotRepo) {
+//            authentication(userName: sonatypeUsername,
+//                    password: sonatypePassword)
+//        }
+//
+//        pom.project {
+//            name 'Discreet App Rater'
+//            packaging 'aar'
+//            description 'Lightweight and non intrusive app rate reminder for Android'
+//            url 'https://github.com/PomepuyN/discreet-app-rate'
+//            artifactId 'discreetapprate'
+//            groupId 'fr.nicolaspomepuy'
+//
+//            scm {
+//                url 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
+//                connection 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
+//                developerConnection 'scm:git@github.com:PomepuyN/discreet-app-rate.git'
+//            }
+//
+//            licenses {
+//                license {
+//                    name 'The Apache Software License, Version 2.0'
+//                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                    distribution 'repo'
+//                }
+//            }
+//
+//            developers {
+//                developer {
+//                    id 'npomepuy'
+//                    name 'Nicolas POMEPUY'
+//                    email 'nicolas.pomepuy@gmail.com'
+//                }
+//            }
+//        }
+//    }
+//
+//    android.libraryVariants.all { variant ->
+//
+//        task("generate${variant.name}Javadoc", type: Javadoc) {
+//            title = "$name $version API"
+//            description "Generates Javadoc for $variant.name."
+//            source = variant.javaCompile.source
+//            ext.androidJar =
+//                    "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+//            classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+//            options.links("http://docs.oracle.com/javase/7/docs/api/");
+//            options.links("http://d.android.com/reference/");
+//            exclude '**/BuildConfig.java'
+//            exclude '**/R.java'
+//        }
+//
+//    }
+//}
 
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    implementation "com.android.support:appcompat-v7:$app_compat_version"
 }
