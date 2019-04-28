@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.1'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion 21
+        minSdkVersion 14
+        targetSdkVersion 28
         versionCode 20000
         versionName "2.0"
     }
@@ -16,14 +16,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':DiscreetAppRate')
-    compile 'com.readystatesoftware.systembartint:systembartint:+'
-    compile('de.keyboardsurfer.android.widget:crouton:1.8.4@aar') {
+    implementation "com.android.support:appcompat-v7:$app_compat_version"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':DiscreetAppRate')
+    implementation 'com.readystatesoftware.systembartint:systembartint:+'
+    implementation('de.keyboardsurfer.android.widget:crouton:1.8.4@aar') {
         exclude group: 'com.google.android', module: 'support-v4'
     }
 }
