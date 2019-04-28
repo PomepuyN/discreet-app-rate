@@ -35,6 +35,7 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import fr.nicolaspomepuy.discreetapprate.AppRate;
 import fr.nicolaspomepuy.discreetapprate.AppRateTheme;
+import fr.nicolaspomepuy.discreetapprate.Position;
 import fr.nicolaspomepuy.discreetapprate.RetryPolicy;
 
 public class MainActivity extends AppCompatActivity {
@@ -257,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 .debug(true)
                 .view(customView)
                 .theme(choosedTheme)
-                .fromTop(onTop.isChecked())
+                .position(onTop.isChecked() ? Position.TOP : Position.BOTTOM)
                 .pauseAfterCrash(Integer.valueOf(pauseAfterCrash.getText().toString())*1000)
                 .installedSince(Integer.valueOf(installTime.getText().toString())*1000)
                 .delay(Integer.valueOf(delay.getText().toString()))
