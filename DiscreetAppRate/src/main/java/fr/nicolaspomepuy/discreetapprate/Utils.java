@@ -77,7 +77,7 @@ public class Utils {
 
     /*
      * This method check network state for opening Google Play Store If network
-     * is not avaible AppRate will not try to show up.
+     * is not available AppRate will not try to show up.
      *
      * This method return true if application doesn't has "ACCESS_NETWORK_STATE" permission.
      */
@@ -85,7 +85,7 @@ public class Utils {
         int res = context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE);
         if (res == PackageManager.PERMISSION_GRANTED) {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            @SuppressLint("MissingPermission") NetworkInfo netInfo = cm.getActiveNetworkInfo();
             if (netInfo != null && netInfo.isConnectedOrConnecting()) {
                 return true;
             }
