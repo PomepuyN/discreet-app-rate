@@ -37,15 +37,49 @@ dependencies {
 
 ## Usage
 
+Minimal declaration
+
+`AppRate.with(MyActivity.this).checkAndShow();`
+
+### Composition:
+
 ```
-AppRate.with(MyActivity.this).checkAndShow();
+AppRate // the class
+    .with(MyActivity.this) // The linked activity. Mandatory
+    .[Settings] // see the settings section below
+    .[Action] // action to be performed. Cannot be chained. See the action section below
 ```
 
-All the following settings and actions can be chained.
+## Settings
 
-## API
+[Full list of settings](docs/Settings.md)
 
-Please visit the [Wiki section](https://github.com/PomepuyN/discreet-app-rate/wiki) to read the full API
+## Actions
+
+[Full list of actions](docs/Actions.md)
+
+## Changelog
+
+### V2.1
+* Positioning on screen has become more flexible by supporting `margin` paramter
+
+### V2.0.1 - V2.0.2
+
+* Bug fixes
+
+### V2.0
+
+* Support for custom views
+
+* Deprecation of methods using time to use milliseconds
+* Detects if Play Store is installed
+* Better Translucent activity support
+
+### V1.0.4
+
+* Avoid showing anything if the Play Store is not installed
+* Avoid showing anything when there is no connection (thanks to @kozaxinan)
+* Translucent theme support
 
 
 ## License
