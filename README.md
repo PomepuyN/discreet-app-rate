@@ -1,7 +1,8 @@
 Discreet App Rate
 ============
 
-[![Build Status](https://travis-ci.org/diniska/discreet-app-rate.svg?branch=master)](https://travis-ci.org/diniska/discreet-app-rate)
+[![Build Status](https://travis-ci.org/diniska/discreet-app-rate.svg?branch=master)](https://travis-ci.org/diniska/discreet-app-rate) [![Release](https://jitpack.io/v/diniska/discreet-app-rate.svg)]
+(https://jitpack.io/#User/Repo)
 
 A lightweight non intrusive app rate reminder for Android
 
