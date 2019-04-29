@@ -55,7 +55,7 @@ public class AppRate {
     private String packageName;
     private AppRateTheme theme = AppRateTheme.DARK;
     private long pauseAfterCrash;
-    private boolean fromTop = false;
+    private Position position;
     private long minimumMonitoringTime;
     private long minimumInterval;
     private int view;
@@ -515,8 +515,8 @@ public class AppRate {
     }
 
 
-    public AppRate fromTop(boolean fromTop) {
-        this.fromTop = fromTop;
+    public AppRate position(Position position) {
+        this.position = position;
         return this;
     }
 
@@ -544,25 +544,34 @@ public class AppRate {
         ViewGroup container = (ViewGroup) mainView.findViewById(R.id.dar_container);
 
         if (container != null) {
-            if (fromTop) {
-                if (container.getParent() instanceof FrameLayout) {
-                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
-                    lp.gravity = Gravity.TOP;
-                    container.setLayoutParams(lp);
-                } else if (container.getParent() instanceof RelativeLayout) {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
-                    lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                    container.setLayoutParams(lp);
+            switch (position.getDirection()) {
+                case FROM_TOP: {
+                    if (container.getParent() instanceof FrameLayout) {
+                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                        lp.gravity = Gravity.TOP;
+                        lp.topMargin = position.getMargin();
+                        container.setLayoutParams(lp);
+                    } else if (container.getParent() instanceof RelativeLayout) {
+                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                        lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                        lp.topMargin = position.getMargin();
+                        container.setLayoutParams(lp);
+                    }
+                    break;
                 }
-            } else {
-                if (container.getParent() instanceof FrameLayout) {
-                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
-                    lp.gravity = Gravity.BOTTOM;
-                    container.setLayoutParams(lp);
-                } else if (container.getParent() instanceof RelativeLayout) {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
-                    lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                    container.setLayoutParams(lp);
+                case FROM_BOTTOM: {
+                    if (container.getParent() instanceof FrameLayout) {
+                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                        lp.gravity = Gravity.BOTTOM;
+                        lp.bottomMargin = position.getMargin();
+                        container.setLayoutParams(lp);
+                    } else if (container.getParent() instanceof RelativeLayout) {
+                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                        lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                        lp.bottomMargin = position.getMargin();
+                        container.setLayoutParams(lp);
+                    }
+                    break;
                 }
             }
         }
@@ -634,55 +643,60 @@ public class AppRate {
             Window win = activity.getWindow();
             WindowManager.LayoutParams winParams = win.getAttributes();
 
-            if (fromTop) {
-                boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                int translucentLolliPop = activity.getWindow().getDecorView().getSystemUiVisibility();
-                boolean isTranslucentLolliPop = (translucentLolliPop== View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+            switch (position.getDirection()) {
+                case FROM_TOP: {
+                    boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    int translucentLolliPop = activity.getWindow().getDecorView().getSystemUiVisibility();
+                    boolean isTranslucentLolliPop = (translucentLolliPop == View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
 
-                if (isTranslucent || isTranslucentLolliPop) {
-                    if (debug) LogD("Activity is translucent");
+                    if (isTranslucent || isTranslucentLolliPop) {
+                        if (debug) LogD("Activity is translucent");
 
-                    if (container.getParent() instanceof FrameLayout) {
-                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
-                        lp.topMargin = Utils.getActionStatusBarHeight(activity);
-                        container.setLayoutParams(lp);
-                    } else if (container.getParent() instanceof RelativeLayout) {
-                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
-                        lp.topMargin = Utils.getActionStatusBarHeight(activity);
-                        container.setLayoutParams(lp);
-                    }
-                }
-            } else {
-                boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                if (isTranslucent) {
-                    if (debug) LogD("Activity is translucent");
-                    Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-                    int orientation = display.getRotation();
-
-                    ViewGroup.MarginLayoutParams lp = null;
-                    if (container.getParent() instanceof FrameLayout) {
-                        lp = (FrameLayout.LayoutParams) container.getLayoutParams();
-                    } else if (container.getParent() instanceof RelativeLayout) {
-                        lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
-                    }
-
-
-                    if (lp != null) {
-                        switch (orientation) {
-                            case Surface.ROTATION_0:
-                            case Surface.ROTATION_180:
-                                lp.bottomMargin = Utils.getSoftbuttonsbarHeight(activity);
-                                container.setLayoutParams(lp);
-                                break;
-                            case Surface.ROTATION_90:
-                            case Surface.ROTATION_270:
-                                lp.rightMargin = Utils.getSoftbuttonsbarWidth(activity);
-                                container.setLayoutParams(lp);
-                                break;
+                        if (container.getParent() instanceof FrameLayout) {
+                            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                            lp.topMargin = Utils.getActionStatusBarHeight(activity) + position.getMargin();
+                            container.setLayoutParams(lp);
+                        } else if (container.getParent() instanceof RelativeLayout) {
+                            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                            lp.topMargin = Utils.getActionStatusBarHeight(activity) + position.getMargin();
+                            container.setLayoutParams(lp);
                         }
                     }
+                    break;
+                }
+                case FROM_BOTTOM: {
+                    boolean isTranslucent = Utils.hasFlag(winParams.flags, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                    if (isTranslucent) {
+                        if (debug) LogD("Activity is translucent");
+                        Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                        int orientation = display.getRotation();
+
+                        ViewGroup.MarginLayoutParams lp = null;
+                        if (container.getParent() instanceof FrameLayout) {
+                            lp = (FrameLayout.LayoutParams) container.getLayoutParams();
+                            lp.bottomMargin = position.getMargin();
+                        } else if (container.getParent() instanceof RelativeLayout) {
+                            lp = (RelativeLayout.LayoutParams) container.getLayoutParams();
+                            lp.bottomMargin = position.getMargin();
+                        }
 
 
+                        if (lp != null) {
+                            switch (orientation) {
+                                case Surface.ROTATION_0:
+                                case Surface.ROTATION_180:
+                                    lp.bottomMargin = Utils.getSoftbuttonsbarHeight(activity) + position.getMargin() ;
+                                    container.setLayoutParams(lp);
+                                    break;
+                                case Surface.ROTATION_90:
+                                case Surface.ROTATION_270:
+                                    lp.rightMargin = Utils.getSoftbuttonsbarWidth(activity) + position.getMargin();
+                                    container.setLayoutParams(lp);
+                                    break;
+                            }
+                        }
+                    }
+                    break;
                 }
             }
         }
@@ -712,12 +726,7 @@ public class AppRate {
     }
 
     private void hideAllViews(final ViewGroup mainView) {
-        Animation hideAnimation;
-        if (fromTop) {
-            hideAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out_from_top);
-        } else {
-            hideAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
-        }
+        final Animation hideAnimation = PositionExtensions.Companion.hideAnimation(activity, position);
 
         hideAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -744,12 +753,7 @@ public class AppRate {
 
 
         if (mainView != null) {
-            Animation fadeInAnimation;
-            if (fromTop) {
-                fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in_from_top);
-            } else {
-                fadeInAnimation = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
-            }
+            Animation fadeInAnimation = PositionExtensions.Companion.showAnimation(activity, position);
             mainView.startAnimation(fadeInAnimation);
         }
 
