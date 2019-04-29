@@ -10,13 +10,27 @@ A lightweight non intrusive app rate reminder for Android
 
 ## Download
 
-```
-repositories {
-    mavenCentral()
-}
+The project uses [JitPack](https://jitpack.io/#diniska/discreet-app-rate) to distribute the code. It is fairly easy to install.
 
+### Step 1
+In project build.gradle file add
+
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' } // Add this line to the list of the repositories
+    }
+}
+```
+
+Add dependency to your app in build.gradle file of the app module
+(Replace `VERSION ` in the code below to the actual version of the library you want to use):
+
+```
 dependencies {
-    compile 'fr.nicolaspomepuy:discreetapprate:2.0.3@aar'
+    ...
+    implementation 'com.github.diniska:discreet-app-rate:<VERSION>@aar'
 }
 ```
 
