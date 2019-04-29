@@ -47,9 +47,6 @@ All the following settings and actions can be chained.
 
 Please visit the [Wiki section](https://github.com/PomepuyN/discreet-app-rate/wiki) to read the full API
 
-## Sample
-
-[Available in the Google Play Store](https://play.google.com/store/apps/details?id=com.npi.discreetapprate.sample)
 
 ## License
 
