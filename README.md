@@ -24,6 +24,8 @@ allprojects {
 }
 ```
 
+### Step 2
+
 Add dependency to your app in build.gradle file of the app module
 (Replace `VERSION ` in the code below to the actual version of the library you want to use):
 
