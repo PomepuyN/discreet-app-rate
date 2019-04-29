@@ -14,7 +14,7 @@ List of library settings
     initialLaunchCount(int initialLaunchCount)
 ```
 
-* [RetryPolicy](./RetryPolicy) to use to show the AppRate again
+* [RetryPolicy](./RetryPolicy.md) to use to show the AppRate again
 ```
     retryPolicy(RetryPolicy policy)
 ```
@@ -39,7 +39,7 @@ List of library settings
 
 * Add a constraint to show the view only if the app is installed for more than a duration (in sec.)
 
-:warning::warning::warning:**Deprecated** [See here](./Settings#v20)
+:warning::warning::warning:**Deprecated** [See here](./Settings.md#v20)
 ```
     atLeastInstalledSince(long installedSince)
 ```
@@ -57,23 +57,23 @@ List of library settings
 ### V1.0.4
 :arrow_up: _2014-03-15_
 
-* Pause duration after a crash (in sec.). :warning: Calling action [initExceptionHandler()](./Actions#v104) is mandatory to make it work.
+* Pause duration after a crash (in sec.). :warning: Calling action [initExceptionHandler()](./Actions.md#v104) is mandatory to make it work.
 
-:warning::warning::warning:**Deprecated** [See here](./Settings#v20)
+:warning::warning::warning:**Deprecated** [See here](./Settings.md#v20)
 ```
     pauseTimeAfterCrash(long pauseAfterCrash)
 ```
 
-* Set the minimum monitoring time needed before showing the view. See [startMonitoring](.Actions#v104) and [endMonitoring](./Actions#v104) to understand how it works.
+* Set the minimum monitoring time needed before showing the view. See [startMonitoring](.Actions#v104) and [endMonitoring](./Actions.md#v104) to understand how it works.
 
-:warning::warning::warning:**Deprecated** [See here](./Settings#v20)
+:warning::warning::warning:**Deprecated** [See here](./Settings.md#v20)
 ```
     minimumMonitoringTime(long minimumMonitoringTime)
 ```
 
 * Set the minimum interval between two launches to increment the count
 
-:warning::warning::warning:**Deprecated** [See here](./Settings#v20)
+:warning::warning::warning:**Deprecated** [See here](./Settings.md#v20)
 ```
     minimumInterval(long minimumInterval)
 ```
@@ -82,12 +82,12 @@ List of library settings
 
 **Some methods have been deprecated to use milliseconds instead of seconds:**
 
-* Pause duration after a crash (in ms.). :warning: Calling action [initExceptionHandler()](./Actions#v104) is mandatory to make it work.
+* Pause duration after a crash (in ms.). :warning: Calling action [initExceptionHandler()](./Actions.md#v104) is mandatory to make it work.
 ```
     pauseAfterCrash(long pauseAfterCrash)
 ```
 
-* Set the minimum monitoring time needed before showing the view. See [startMonitoring](./Actions#v104) and [endMonitoring](./Actions#v104) to understand how it works.
+* Set the minimum monitoring time needed before showing the view. See [startMonitoring](./Actions.md#v104) and [endMonitoring](./Actions.md#v104) to understand how it works.
 ```
     minMonitoringTime(long minimumMonitoringTime)
 ```
