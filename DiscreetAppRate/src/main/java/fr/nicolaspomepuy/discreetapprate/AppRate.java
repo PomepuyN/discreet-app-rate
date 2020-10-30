@@ -332,39 +332,38 @@ public class AppRate {
      *
      */
 
-
     /**
-     * Check and show if showing the view is needed
+     * Checks if showing the view is needed
+     * @return true when the view should be shown and false otherwise
      */
-    @SuppressLint("NewApi")
-	public void checkAndShow() {
+    public boolean check() {
 
         if (!Utils.isGooglePlayInstalled(activity)) {
             if (debug) LogD("Play Store is not installed. Won't do anything");
-            return;
+            return false;
         }
 
         if (debug)
             LogD("Last crash: " + ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) / 1000) + " seconds ago");
         if ((System.currentTimeMillis() - settings.getLong(KEY_LAST_CRASH, 0L)) < pauseAfterCrash) {
             if (debug) LogD("A recent crash avoids anything to be done.");
-            return;
+            return false;
         }
 
         if (settings.getLong(KEY_MONITOR_TOTAL, 0L) < minimumMonitoringTime) {
             if (debug)
                 LogD("Monitor time not reached. Nothing will be done");
-            return;
+            return false;
         }
 
         if (!Utils.isOnline(activity)) {
             if (debug)
                 LogD("Device is not online. AppRate try to show up next time.");
-            return;
+            return false;
         }
 
         if (!incrementViews()) {
-            return;
+            return false;
         }
 
 
@@ -377,7 +376,7 @@ public class AppRate {
             if (now.getTime() - installDate.getTime() < installedSince) {
                 if (debug)
                     LogD("Date not reached. Time elapsed since installation (in sec.): " + (now.getTime() - installDate.getTime()));
-                return;
+                return false;
             }
         }
 
@@ -397,20 +396,32 @@ public class AppRate {
         }
 
         boolean clicked = settings.getBoolean(KEY_CLICKED, false);
-        if (clicked) return;
+        if (clicked) return false;
         int count = settings.getInt(KEY_COUNT, 0);
         if (count == initialLaunchCount) {
             if (debug) LogD("initialLaunchCount reached");
-            showAppRate();
+            return true;
         } else if (policy == RetryPolicy.INCREMENTAL && count % initialLaunchCount == 0) {
             if (debug) LogD("initialLaunchCount incremental reached");
-            showAppRate();
+            return true;
         } else if (policy == RetryPolicy.EXPONENTIAL && count % initialLaunchCount == 0 && Utils.isPowerOfTwo(count / initialLaunchCount)) {
             if (debug) LogD("initialLaunchCount exponential reached");
-            showAppRate();
+            return true;
         } else {
-            if (debug)
+            if (debug) {
                 LogD("Nothing to show. initialLaunchCount: " + initialLaunchCount + " - Current count: " + count);
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Check and show if showing the view is needed
+     */
+    @SuppressLint("NewApi")
+	public void checkAndShow() {
+        if (check()) {
+            showAppRate();
         }
     }
 
